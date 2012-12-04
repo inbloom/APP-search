@@ -1,0 +1,672 @@
+<%= render :partial => 'navbar' %>
+	<div>
+	<table class="table" style="border:0px;" id="searchBody">
+		<tr class="warning">
+			<td style="width:25%;color:white;background-color:#45aeea;vertical-align:middle;text-align:center;">			
+				<div id="resultStats"></div>
+			</td>
+			<td style="width:75%;">
+					  <input style="width:85%;margin-top:7px;" type="text" name="searchInput" id="searchInput">
+					  <button class="btn" onClick="window.resultsStart = 0;displaySearchResults()">Search</button>
+
+			</td>
+		</tr>
+		<tr>
+			<td style="background-color:#8accf2;color:white;"><b>FILTER YOUR RESULTS</b><br/>
+				<table class="table" id="filterFields">
+					<tr>
+						<td id="flyoutLabel1" rel="popover" data-title="Intended End User Role" onmouseover="flyoutLabelMouseOver(flyoutLabel1);" onmouseout="flyoutLabelMouseOut(flyoutLabel1);">Intended End User Role <i class="icon-chevron-right icon-white pull-right"/></td>
+					</tr>
+					<tr>
+						<td id="filter1" style="background-color:#5cb8ed;border:1px #fff solid;display:none;"></td>		
+					</tr> 
+					<tr>
+						<td id="flyoutLabel2" rel="popover" data-title="Educational Use" onmouseover="flyoutLabelMouseOver(flyoutLabel2);" onmouseout="flyoutLabelMouseOut(flyoutLabel2);">Educational Use <i class="icon-chevron-right icon-white pull-right"/></td>
+					</tr>
+					<tr>
+						<td id="filter2" style="background-color:#5cb8ed;border:1px #fff solid;display:none;"></td>		
+					</tr>
+					<tr>
+						<td id="flyoutLabel3" rel="popover" data-title="Typical Age Range" onmouseover="flyoutLabelMouseOver(flyoutLabel3);" onmouseout="flyoutLabelMouseOut(flyoutLabel3);">Typical Age Range <i class="icon-chevron-right icon-white pull-right"/></td>
+					</tr>
+					<tr>
+						<td id="filter3" style="background-color:#5cb8ed;border:1px #fff solid;display:none;"></td>		
+					</tr>
+					<tr>
+						<td id="flyoutLabel4" rel="popover" data-title="Interactivity Type" onmouseover="flyoutLabelMouseOver(flyoutLabel4);" onmouseout="flyoutLabelMouseOut(flyoutLabel4);">Interactivity Type <i class="icon-chevron-right icon-white pull-right"/></td>
+					</tr>
+					<tr>
+						<td id="filter4" style="background-color:#5cb8ed;border:1px #fff solid;display:none;"></td>		
+					</tr>
+					<tr>
+						<td id="flyoutLabel5" rel="popover" data-title="Learning Resource Type" onmouseover="flyoutLabelMouseOver(flyoutLabel5);" onmouseout="flyoutLabelMouseOut(flyoutLabel5);">Learning Resource Type <i class="icon-chevron-right icon-white pull-right"/></td>
+					</tr>
+					<tr>
+						<td id="filter5" style="background-color:#5cb8ed;border:1px #fff solid;display:none;"></td>		
+					</tr>		
+					<tr>
+						<td id="flyoutLabel6" rel="popover" data-title="Media Type" onmouseover="flyoutLabelMouseOver(flyoutLabel6);" onmouseout="flyoutLabelMouseOut(flyoutLabel6);">Media Type <i class="icon-chevron-right icon-white pull-right"/></td>
+					</tr>
+					<tr>
+						<td id="filter6" style="background-color:#5cb8ed;border:1px #fff solid;display:none;"></td>		
+					</tr>	
+					<tr>
+						<td>Publisher</td>
+					</tr>
+					<tr>
+						<td><input type="text" style="width:90%;" name="publisherInput" id="publisherInput"></td>		
+					</tr>
+					<tr>
+					<td>Dot Notation</td>
+					</tr>
+					<tr>
+						<td><input type="text" style="width:90%;" name="dotNotationInput" id="dotNotationInput"></td>		
+					</tr>					
+				</table>
+			</td>
+			<td rowspan=2 id="resultsPane" style="width:100%;">Waiting for Search</td>
+		</tr>	
+	</table>	
+	</div>
+
+
+	<div id="popoverflyoutLabel1" style="display: none">
+	  <div>This is your div content</div>
+	</div>
+
+	<div id="popoverflyoutLabel2" style="display: none">
+	  <div>This is your div content</div>
+	</div>
+
+	<div id="popoverflyoutLabel3" style="display: none">
+	  <div>This is your div content</div>
+	</div>
+
+	<div id="popoverflyoutLabel4" style="display: none">
+	  <div>This is your div content</div>
+	</div>
+
+	<div id="popoverflyoutLabel5" style="display: none">
+	  <div>This is your div content</div>
+	</div>
+
+	<div id="popoverflyoutLabel6" style="display: none">
+	  <div>This is your div content</div>
+	</div>
+
+<script>
+$(document).ready(function(){
+// Setup Arrays for Filter Results Data Display
+  window.intendedEndUserRoleArray = new Array();
+  window.educationalUseArray = new Array();
+  window.typicalAgeRangeArray = new Array();
+  window.interactivityTypeArray = new Array();
+  window.learningResourceTypeArray = new Array();
+  window.mediaTypeArray = new Array();
+  
+// Setup Arrays for Filter Results Data Selection
+  window.intendedEndUserRoleFilterArray = new Array();
+  window.educationalUseFilterArray = new Array();
+  window.typicalAgeRangeFilterArray = new Array();
+  window.interactivityTypeFilterArray = new Array();
+  window.learningResourceTypeFilterArray = new Array();
+  window.mediaTypeFilterArray = new Array();  
+  
+// Setup Dot Notation Array 
+  window.dotNotationDisplayArray = new Array();
+  readAlignmentDataFromFiles();
+  var $dotNotation = $( '#dotNotationInput');
+  $dotNotation.typeahead({source: dotNotationDisplayArray, items:8});
+  
+// Setup Variables For Search Stats and Results
+   window.resultsReturned = 0;
+   window.resultsStart = 0;
+   window.resultSetSize = 10;
+  
+// Read Vocabular CSV Into Filter Results Data Arrays
+  readVocabularyFile();
+  
+// Utility Functions
+if (typeof String.prototype.startsWith != 'function') {
+  String.prototype.startsWith = function (str){
+    return this.slice(0, str.length) == str;
+  };
+}
+
+String.prototype.trunc =
+     function(n,useWordBoundary){
+         var toLong = this.length>n,
+             s_ = toLong ? this.substr(0,n-1) : this;
+         s_ = useWordBoundary && toLong ? s_.substr(0,s_.lastIndexOf(' ')) : s_;
+         return  toLong ? s_ + '&hellip;' : s_;
+      };  
+  
+});
+
+
+// Reads the ccss2asn-ela.csv and ccss2asn-math.csv from local server to populate Alignment Array
+function readAlignmentDataFromFiles() {
+ $.ajax({
+        type: "GET",
+        url: "ccss2asn-math.csv",
+        dataType: "text",
+        success: function(data) {processDataForAlignmentArray(data);}
+     });
+ $.ajax({
+        type: "GET",
+        url: "ccss2asn-ela.csv",
+        dataType: "text",
+        success: function(data) {processDataForAlignmentArray(data);}
+     });	 
+}
+	 
+function processDataForAlignmentArray(allText)	{
+  var reader = new FileReader();
+  reader.readAsText(allText);
+  var output = $.csv2Array(allText);
+  			for (var i = 1; i < output.length-1; i++)
+			{
+				dotNotationDisplayArray.push(output[i][2]);
+			}
+}
+
+
+
+// Mouseover effect of Popover flyouts for the left sidebar items with chevrons.
+// Clears popovers other than current mouseover item and creates gold effect color.
+ 
+function flyoutLabelMouseOver(item){
+	clearPopovers(item);
+	item.style.backgroundColor='#F8B93B';
+};
+
+
+// Mouseout effect of Popover flyouts for the left sidebar items with chevrons.
+// Restores the color back to the original blue color on Mouseout.
+  
+function flyoutLabelMouseOut(item){
+	item.style.backgroundColor='#8accf2';
+};
+  
+// Clear Popover will close popovers other than the current item.
+  
+function clearPopovers(item){
+  if(item.id != "flyoutLabel1"){$("#flyoutLabel1").popover('hide');};
+  if(item.id != "flyoutLabel2"){$("#flyoutLabel2").popover('hide');};
+  if(item.id != "flyoutLabel3"){$("#flyoutLabel3").popover('hide');};
+  if(item.id != "flyoutLabel4"){$("#flyoutLabel4").popover('hide');};
+  if(item.id != "flyoutLabel5"){$("#flyoutLabel5").popover('hide');};
+  if(item.id != "flyoutLabel6"){$("#flyoutLabel6").popover('hide');};  
+};
+
+// Clear Popover will close popovers other than the current item.
+  
+function clearAllPopovers(){
+	$("#flyoutLabel1").popover('hide');
+	$("#flyoutLabel2").popover('hide');
+	$("#flyoutLabel3").popover('hide');
+	$("#flyoutLabel4").popover('hide');
+	$("#flyoutLabel5").popover('hide');
+	$("#flyoutLabel6").popover('hide');  
+};  
+  
+// In the Public Folder of LRMISearch is a file Vocabulary.csv that we need to read in
+// We read the file and pass its contents for processing.
+
+function readVocabularyFile() {
+ $.ajax({
+        type: "GET",
+		url: "Vocabulary.csv",
+        dataType: "text",
+        success: function(data) {processVocabularyInput(data);}
+     }); 
+}
+
+// We process the contents of the Vocabulary CSV data using csv2Array JS.
+// We then load this data into arrays to ma	
+	
+function processVocabularyInput(allText)	{
+	var reader = new FileReader();
+	reader.readAsText(allText);
+	var output = $.csv2Array(allText);
+  	for (var i = 1; i < output.length-1; i++)
+		{
+		  if (output[i][0] !== "") {window.intendedEndUserRoleArray.push(output[i][0]);}
+		  if (output[i][1] !== "") {window.educationalUseArray.push(output[i][1]);}
+		  if (output[i][2] !== "") {window.typicalAgeRangeArray.push(output[i][2]);}
+		  if (output[i][3] !== "") {window.interactivityTypeArray.push(output[i][3]);}
+		  if (output[i][4] !== "") {window.mediaTypeArray.push(output[i][4]);}
+		  if (output[i][5] !== "") {window.learningResourceTypeArray.push(output[i][5]);}
+		}
+	setFlyoverDivHTML(); 
+				
+}  
+  
+// This function sets the contents of the Filter flyout popovers.
+
+function setFlyoverDivHTML() {
+	$("#popoverflyoutLabel1").html(setupTableGrid("#popoverflyoutLabel1",window.intendedEndUserRoleArray, window.intendedEndUserRoleFilterArray));
+	$("#popoverflyoutLabel2").html(setupTableGrid("#popoverflyoutLabel2",window.educationalUseArray, window.educationalUseFilterArray));	
+	$("#popoverflyoutLabel3").html(setupTableGrid("#popoverflyoutLabel3",window.typicalAgeRangeArray, window.typicalAgeRangeFilterArray));	
+	$("#popoverflyoutLabel4").html(setupTableGrid("#popoverflyoutLabel4",window.interactivityTypeArray, window.interactivityTypeFilterArray));	
+	$("#popoverflyoutLabel5").html(setupTableGrid("#popoverflyoutLabel5",window.learningResourceTypeArray, window.learningResourceTypeFilterArray));	
+	$("#popoverflyoutLabel6").html(setupTableGrid("#popoverflyoutLabel6",window.mediaTypeArray, window.mediaTypeFilterArray));	
+
+	updateFlyoverDisplay();
+
+	}
+
+// This function sets up the Table Grid on the Flyout popovers.
+function setupTableGrid(divLabel, filterArray, selectedFilterArray) {
+	var str = "<table style='width:800px;'>";
+	for (var i = 0; i < filterArray.length; i++) {
+	if ( (i%3) == 0) {
+		if (filterArray[i + 2] != undefined) {
+			str = str + "<tr>";
+			if (jQuery.inArray(filterArray[i], selectedFilterArray) != -1) {
+				str = str + "<td><input type='checkbox' checked='checked' id='" + filterArray[i] + "' name='" + filterArray[i] + "' value='" + filterArray[i] + "' onClick='updateFilter(this, \""+divLabel+"\")'>   " + filterArray[i]+ "   </td>";
+			}
+			else {
+				str = str + "<td><input type='checkbox' id='" + filterArray[i] + "' name='" + filterArray[i] + "' value='" + filterArray[i] + "' onClick='updateFilter(this, \""+divLabel+"\")'>   " + filterArray[i]+ "   </td>";			
+			}
+
+			if (jQuery.inArray(filterArray[i + 1], selectedFilterArray) != -1) {
+				str = str + "<td><input type='checkbox' checked='checked' id='" + filterArray[i + 1] + "' name='" + filterArray[i + 1] + "' value='" + filterArray[i + 1] + "' onClick='updateFilter(this, \""+divLabel+"\")'>   " + filterArray[i + 1]+ "   </td>";
+			}
+			else {
+				str = str + "<td style='width:33%;'><input type='checkbox' id='" + filterArray[i + 1] + "' name='" + filterArray[i + 1] + "' value='" + filterArray[i + 1] + "' onClick='updateFilter(this, \""+divLabel+"\")'>   " + filterArray[i + 1]+ "   </td>";			
+			}
+			
+			if (jQuery.inArray(filterArray[i + 2], selectedFilterArray) != -1) {
+				str = str + "<td><input type='checkbox' checked='checked' id='" + filterArray[i + 2] + "' name='" + filterArray[i + 2] + "' value='" + filterArray[i + 2] + "' onClick='updateFilter(this, \""+divLabel+"\")'>   " + filterArray[i + 2]+ "   </td>";
+			}
+			else {
+				str = str + "<td><input type='checkbox' id='" + filterArray[i + 2] + "' name='" + filterArray[i + 2] + "' value='" + filterArray[i + 2] + "' onClick='updateFilter(this, \""+divLabel+"\")'>   " + filterArray[i + 2]+ "   </td>";			
+			}
+			str = str + "</tr>";
+		}
+		else if (filterArray[i + 1] != undefined) {
+			str = str + "<tr>";
+			if (jQuery.inArray(filterArray[i], selectedFilterArray) != -1) {
+				str = str + "<td><input type='checkbox' checked='checked' id='" + filterArray[i] + "' name='" + filterArray[i] + "' value='" + filterArray[i] + "' onClick='updateFilter(this, \""+divLabel+"\")'>   " + filterArray[i]+ "   </td>";
+			}
+			else {
+				str = str + "<td><input type='checkbox' id='" + filterArray[i] + "' name='" + filterArray[i] + "' value='" + filterArray[i] + "' onClick='updateFilter(this, \""+divLabel+"\")'>   " + filterArray[i]+ "   </td>";			
+			}
+
+			if (jQuery.inArray(filterArray[i + 1], selectedFilterArray) != -1) {
+				str = str + "<td><input type='checkbox' checked='checked' id='" + filterArray[i + 1] + "' name='" + filterArray[i + 1] + "' value='" + filterArray[i + 1] + "' onClick='updateFilter(this, \""+divLabel+"\")'>   " + filterArray[i + 1]+ "    </td>";
+			}
+			else {
+				str = str + "<td><input type='checkbox' id='" + filterArray[i + 1] + "' name='" + filterArray[i + 1] + "' value='" + filterArray[i + 1] + "' onClick='updateFilter(this, \""+divLabel+"\")'>   " + filterArray[i + 1]+ "   </td>";			
+			}
+			str = str + "</tr>";
+		}
+		else {
+			str = str + "<tr>";
+			if (jQuery.inArray(filterArray[i], selectedFilterArray) != -1) {
+				str = str + "<td><input type='checkbox' checked='checked' id='" + filterArray[i] + "' name='" + filterArray[i] + "' value='" + filterArray[i] + "' onClick='updateFilter(this, \""+divLabel+"\")'>   " + filterArray[i]+ "   </td>";
+			}
+			else {
+				str = str + "<td><input type='checkbox' id='" + filterArray[i] + "' name='" + filterArray[i] + "' value='" + filterArray[i] + "' onClick='updateFilter(this, \""+divLabel+"\")'>   " + filterArray[i]+ "   </td>";			
+			}
+			str = str + "</tr>";
+			}			
+		}
+	}
+	str = str + "</table>";
+	$(divLabel).html(str);	
+}
+
+
+// Initialization of Popover flyouts for the left sidebar items with chevrons.
+  	
+function updateFlyoverDisplay(){
+  $("#flyoutLabel1").popover({ 
+    html : true,	
+    content: function() {
+	  setFlyoverDivHTML();
+      return $('#popoverflyoutLabel1').html();
+    }
+  });
+  $("#flyoutLabel2").popover({ 
+    html : true,
+    content: function() {
+	  setFlyoverDivHTML();
+      return $('#popoverflyoutLabel2').html();
+    }
+  });
+  $("#flyoutLabel3").popover({ 
+    html : true,
+    content: function() {
+	  setFlyoverDivHTML();
+      return $('#popoverflyoutLabel3').html();
+    }
+  });
+  $("#flyoutLabel4").popover({ 
+    html : true,
+    content: function() {
+	  setFlyoverDivHTML();
+      return $('#popoverflyoutLabel4').html();
+    }
+  });
+  $("#flyoutLabel5").popover({ 
+    html : true,
+    content: function() {
+	  setFlyoverDivHTML();
+      return $('#popoverflyoutLabel5').html();
+    }
+  });
+  $("#flyoutLabel6").popover({ 
+    html : true,
+    content: function() {
+	  setFlyoverDivHTML();
+      return $('#popoverflyoutLabel6').html();
+    }
+  });
+}  
+
+// This function updates the Filter DIV that appear under each header on the left sidebar 
+// The update is called from selection of checkboxes in the corresponding flyout popover
+
+function updateFilter(checkboxSelection, divLabel){
+	var filterDivName = "#filter" + divLabel.substr(divLabel.length - 1);
+	var filterArrayName = "";
+	switch (divLabel.substr(divLabel.length - 1)) {
+		case '1':
+		  filterArrayName = intendedEndUserRoleFilterArray;
+		  break;
+		case '2':
+		  filterArrayName = educationalUseFilterArray;
+		  break;
+		case '3':
+		  filterArrayName = typicalAgeRangeFilterArray;
+		  break;
+		case '4':
+		  filterArrayName = interactivityTypeFilterArray;
+		  break;
+		case '5':
+		  filterArrayName = learningResourceTypeFilterArray;
+		  break;
+		case '6':
+		  filterArrayName = mediaTypeFilterArray;
+		  break;
+	}
+		var foundIn = false;
+		for (var i = 0; i < (filterArrayName.valueOf()).length; i++){
+			if (checkboxSelection.value == filterArrayName[i]) { foundIn = true; }
+		}
+		if (foundIn == false) {
+			filterArrayName.push(checkboxSelection.value);
+			filterArrayName.sort();
+			$(filterDivName).empty();
+			$(filterDivName).hide();
+			for (var i = 0; i < (filterArrayName.valueOf()).length; i++){
+				$(filterDivName).append(filterArrayName[i] + "<i class='icon-remove-sign icon-white pull-right'onclick='removeFilterElement(\""+filterArrayName[i]+"\",\""+divLabel+"\", false)'/><br/>");
+				$(filterDivName).show();
+			}
+			$(filterDivName).show();
+		}
+		else {
+			removeFilterElement(checkboxSelection.value, divLabel, true);
+		}
+		window.resultsStart = 0;
+		displaySearchResults();
+}
+
+
+// This function removes an item that has been added to the filter result array
+// The display is then updated to the current array
+
+function removeFilterElement(removeItem, divLabel, fromPopover){
+	var filterDivName = "#filter" + divLabel.substr(divLabel.length - 1);
+	var filterArrayName = "";
+	switch (divLabel.substr(divLabel.length - 1)) {
+		case '1':
+			var tempArray = jQuery.grep(intendedEndUserRoleFilterArray, function(value) {
+				return value != removeItem;
+			});
+			intendedEndUserRoleFilterArray	= tempArray;
+			filterArrayName = intendedEndUserRoleFilterArray;
+			break;
+		case '2':
+			var tempArray = jQuery.grep(educationalUseFilterArray, function(value) {
+				return value != removeItem;
+			});
+			educationalUseFilterArray	= tempArray;
+			filterArrayName = educationalUseFilterArray;
+			break;
+		case '3':
+			var tempArray = jQuery.grep(typicalAgeRangeFilterArray, function(value) {
+				return value != removeItem;
+			});
+			typicalAgeRangeFilterArray	= tempArray;
+			filterArrayName = typicalAgeRangeFilterArray;
+			break;
+		case '4':
+			var tempArray = jQuery.grep(interactivityTypeFilterArray, function(value) {
+				return value != removeItem;
+			});
+			interactivityTypeFilterArray = tempArray;
+			filterArrayName = interactivityTypeFilterArray;
+			break;
+		case '5':
+			var tempArray = jQuery.grep(learningResourceTypeFilterArray, function(value) {
+				return value != removeItem;
+			});
+			learningResourceTypeFilterArray	= tempArray;
+			filterArrayName = learningResourceTypeFilterArray;
+			break;
+		case '6':
+			var tempArray = jQuery.grep(mediaTypeFilterArray, function(value) {
+				return value != removeItem;
+			});
+			mediaTypeFilterArray	= tempArray;
+			filterArrayName = mediaTypeFilterArray;
+			break;
+	}
+	$(filterDivName).empty();
+	$(filterDivName).hide();
+	filterArrayName.sort();
+	for (var i = 0; i < (filterArrayName.valueOf()).length; i++){
+		$(filterDivName).append(filterArrayName[i] + "<i class='icon-remove-sign icon-white pull-right' onclick='removeFilterElement(\""+filterArrayName[i]+"\",\""+divLabel+"\", false)'/><br/>");
+		$(filterDivName).show();
+	}
+	if (fromPopover == false) {
+		clearAllPopovers();
+	}
+	window.resultsStart = 0;
+	displaySearchResults();
+}
+
+// This function is triggered when the search button is pressed and causes a search to occur
+// on BrainHoney's search servers and return.
+function displaySearchResults(){
+	$("#resultsPane").empty();
+	var verb = "POST";
+	var queryString = "";
+	var contentType = "text/xml; charset=utf-8";
+	
+// Setup Query String Parameters	
+	var searchQueryString = searchInput.value;
+	searchQueryString = searchQueryString.replace(" and "," AND ");
+	searchQueryString = searchQueryString.replace(" or "," OR ");
+	searchQueryString = searchQueryString.replace(" not "," NOT ");
+	
+	for (var i = 0; i < intendedEndUserRoleFilterArray.length; i++) {searchQueryString = searchQueryString + " AND meta-lrmi-intendedEndUserRole:" + intendedEndUserRoleFilterArray[i];}
+	for (var i = 0; i < educationalUseFilterArray.length; i++) {searchQueryString = searchQueryString + " AND meta-lrmi-educationalUse:" + educationalUseFilterArray[i];}
+	for (var i = 0; i < typicalAgeRangeFilterArray.length; i++) {searchQueryString = searchQueryString + " AND meta-lrmi-typicalAgeRange:" + typicalAgeRangeFilterArray[i];}
+	for (var i = 0; i < interactivityTypeFilterArray.length; i++) {searchQueryString = searchQueryString + " AND meta-lrmi-interactivityType:" + interactivityTypeFilterArray[i];}
+	for (var i = 0; i < learningResourceTypeFilterArray.length; i++) {searchQueryString = searchQueryString + " AND meta-lrmi-learningResourceType:" + learningResourceTypeFilterArray[i];}	
+	for (var i = 0; i < mediaTypeFilterArray.length; i++) {searchQueryString = searchQueryString + " AND meta-lrmi-mediaType:" + mediaTypeFilterArray[i];}
+	if (publisherInput.value != ""){searchQueryString = searchQueryString + " AND meta-lrmi-publisher-name:" + publisherInput.value;}
+	if (dotNotationInput.value != ""){searchQueryString = searchQueryString + " AND meta-lrmi-objectiveStatementNotation:" + dotNotationInput.value;}
+	if (searchQueryString.startsWith(" AND ")){searchQueryString = searchQueryString.substring(5,searchQueryString.length);}
+	
+// Begin Call to BrainHoney
+	
+	var post = '<batch><request cmd="login" username="search/anonymous" password="agilix" /><request cmd="search" query="'+ searchQueryString + '" start="' + window.resultsStart + '" entityid="10118387"/></batch>';
+	var format = "*/*";
+	var url = "http://gls.agilix.com/Dlap.ashx";
+	if (queryString.length > 0) {
+	    url = url + "?" + queryString;
+	}
+	$("#resultsPane").html("Loading ...");
+	loadXMLDoc(verb, url, contentType, post, format);
+	console.log(post);
+}
+
+// This function drives the search XML call to BrainHoney
+
+function loadXMLDoc(verb, url, contentType, post, accept) 
+{
+	xmlhttp=null;
+	
+	// code for Mozilla, etc.
+	if (window.XMLHttpRequest)
+	{
+		xmlhttp=new XMLHttpRequest()
+	}
+	// code for IE
+	else if (window.ActiveXObject)
+	{
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP")
+	}
+	if (xmlhttp!=null)
+	{
+	    xmlhttp.onreadystatechange = onResponse;
+		xmlhttp.open(verb,url,true);
+		xmlhttp.setRequestHeader("Accept", accept);
+		if (verb == "GET")
+		{
+			xmlhttp.send(null);
+		}
+		else
+		{
+			xmlhttp.setRequestHeader("Content-Type", contentType);
+			xmlhttp.send(post);
+		}
+	}
+	else
+	{
+		alert("Your browser does not support XMLHTTP.");
+	}
+}
+
+// This function processes the response back from the BrainHoney call and parses the display fields
+
+function onResponse() 
+{
+    if (xmlhttp.readyState == 4)
+    {
+		$("#resultStats").empty();
+		$("#resultsPane").empty();
+		var xmlDoc = xmlhttp.responseXML; 
+		$(xmlDoc).find("doc").each(function() {
+		var name 	= $(this).find('str[name="dlap_title"]').text();
+        var thumb 	= $(this).find('str[name="dlap_thumbnail"]').text();
+		var link 	= $(this).find('arr[name="dlap_links"]').text();
+		var desc 	= $(this).find('arr[name="meta-description-list/meta-description"]').text();
+		var entityID = $(this).attr('entityid');
+		var thumbURL = "http://gls.agilix.com/dlap.ashx?cmd=getresource&entityid="+ entityID + "&path=" + thumb;
+		$("#resultsPane").append("<table style='width:100%;'><tr><td style='width:20%;'><a href='" + link + "' target='_blank'><img style='width:75%;height:75%' src='" + thumbURL + "'/></a></td><td style='width:80%;vertical-align:top;'><h5 style='margin:0 0 0 0;line-height:14px;'><a href='" + link + "' target='_blank'>" + name + "</a></h5><h6 style='margin:0 0 0 0;line-height:14px;font-size:10px;'><a href='" + link + "' target='_blank' style='color:grey;'>" + link + "</a></h6><p>" + desc.trunc(200,true) + "</p><br/><br/></td></tr>");
+		});
+
+
+// Setup Pagination
+
+		window.resultsReturned = parseInt($(xmlDoc).find('result').attr('numFound'));
+		if (window.resultsStart == 0 && window.resultsReturned <= window.resultSetSize) {
+		$("#resultsPane").append("<table style='width:100%;'><tr><td style='width:100%;text-align:center;'></td></tr></table>");}
+		
+		else if (window.resultsStart == 0 && window.resultsReturned > window.resultSetSize) {
+		$("#resultsPane").append("<table style='width:100%;'><tr><td style='width:100%;text-align:center;'> Displaying " + (window.resultsStart+1) + " - " + (window.resultSetSize + window.resultsStart) + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='#' onclick='updateSearchResults(\"next\");'>Next <i class='icon-forward'/></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='#' onclick='updateSearchResults(\"last\");'>Last <i class='icon-fast-forward'/></a></td></tr></table>");}
+		
+		else if (window.resultsStart > 0 && window.resultSetSize < (window.resultsReturned - window.resultsStart) ) {
+		$("#resultsPane").append("<table style='width:100%;'><tr><td style='width:100%;text-align:center;'><a href='#' onclick='updateSearchResults(\"first\");'><i class='icon-fast-backward'/> First</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='#' onclick='updateSearchResults(\"back\");'><i class='icon-backward'/> Back</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Displaying " + (window.resultsStart+1) + " - " + (window.resultSetSize + window.resultsStart) + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='#' onclick='updateSearchResults(\"next\");'>Next <i class='icon-forward'/></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='#' onclick='updateSearchResults(\"last\");'>Last <i class='icon-fast-forward'/></a></td></tr></table>");
+		}
+		
+		else if (window.resultSetSize >= (window.resultsReturned - window.resultsStart) ) {
+		$("#resultsPane").append("<table style='width:100%;'><tr><td style='width:100%;text-align:center;'><a href='#' onclick='updateSearchResults(\"first\");'><i class='icon-fast-backward'/> First</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='#' onclick='updateSearchResults(\"back\");'><i class='icon-backward'/> Back</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Displaying " + (window.resultsStart+1) + " - " + window.resultsReturned + "</td></tr></table>");
+		}	
+		
+		$("#resultsPane").append("</table>");
+		
+// Update Number of Results returned in Result Stats upper left area of Search Window.
+		
+		if (window.resultsReturned == "0") { $("#resultStats").html("<span class='label label-important'>Your search returned no results</span>"); }
+		else if (window.resultsReturned == "1") { $("#resultStats").html("<span class='label label-success'>Your search returned " + window.resultsReturned + " result.</span>"); }
+		else { $("#resultStats").html("<span class='label label-success'>Your search returned " + window.resultsReturned + " results.</span>"); }
+		
+
+		
+	}
+}
+
+// Update the Search Results Based on Inputs 
+
+function updateSearchResults(incoming){
+	if (incoming == "back") { window.resultsStart = window.resultsStart - window.resultSetSize;}
+	else if (incoming == "next") { window.resultsStart = window.resultsStart + window.resultSetSize;}
+	else if (incoming == "first") { window.resultsStart = 0;}
+	else if (incoming == "last") { window.resultsStart = window.resultsReturned - window.resultSetSize;}
+	displaySearchResults();
+	
+}
+
+
+// Tracks the keypress events on the search input field and updates the search results
+$("#searchInput").keyup(function(e){
+	if (event.keyCode == '13') {
+		window.resultsStart = 0;
+		displaySearchResults();
+	}
+	return false;
+
+});
+
+$("#publisherInput").keyup(function(e){
+	if (event.keyCode == '13') {
+		window.resultsStart = 0;
+		displaySearchResults();
+	}
+	return false;
+
+});
+
+$("#dotNotationInput").keyup(function(e){
+	if (event.keyCode == '13') {
+		window.resultsStart = 0;
+		displaySearchResults();
+	}
+	return false;
+
+});
+
+$("#publisherInput").change(function(e){
+		window.resultsStart = 0;	
+		displaySearchResults();
+});
+
+$("#dotNotationInput").change(function(e){
+		window.resultsStart = 0;
+		displaySearchResults();
+});
+
+$("#searchInput").focus(function(e){ 
+	clearAllPopovers();
+});
+
+$("#publisherInput").focus(function(e){ 
+	clearAllPopovers();
+});
+
+$("#dotNotationInput").focus(function(e){ 
+	clearAllPopovers();
+});
+
+$("#resultsPane").click(function(e){ 
+	clearAllPopovers();
+});
+
+</script>
