@@ -95,80 +95,9 @@
 	</div>
 
 <script>
-$(document).ready(function(){
-// Setup Arrays for Filter Results Data Display
-  window.intendedEndUserRoleArray = new Array();
-  window.educationalUseArray = new Array();
-  window.typicalAgeRangeArray = new Array();
-  window.interactivityTypeArray = new Array();
-  window.learningResourceTypeArray = new Array();
-  window.mediaTypeArray = new Array();
-  
-// Setup Arrays for Filter Results Data Selection
-  window.intendedEndUserRoleFilterArray = new Array();
-  window.educationalUseFilterArray = new Array();
-  window.typicalAgeRangeFilterArray = new Array();
-  window.interactivityTypeFilterArray = new Array();
-  window.learningResourceTypeFilterArray = new Array();
-  window.mediaTypeFilterArray = new Array();  
-  
-// Setup Dot Notation Array 
-  window.dotNotationDisplayArray = new Array();
-  readAlignmentDataFromFiles();
-  var $dotNotation = $( '#dotNotationInput');
-  $dotNotation.typeahead({source: dotNotationDisplayArray, items:8});
-  
-// Setup Variables For Search Stats and Results
-   window.resultsReturned = 0;
-   window.resultsStart = 0;
-   window.resultSetSize = 10;
-  
-// Read Vocabular CSV Into Filter Results Data Arrays
-  readVocabularyFile();
-  
-// Utility Functions
-if (typeof String.prototype.startsWith != 'function') {
-  String.prototype.startsWith = function (str){
-    return this.slice(0, str.length) == str;
-  };
-}
-
-String.prototype.trunc =
-     function(n,useWordBoundary){
-         var toLong = this.length>n,
-             s_ = toLong ? this.substr(0,n-1) : this;
-         s_ = useWordBoundary && toLong ? s_.substr(0,s_.lastIndexOf(' ')) : s_;
-         return  toLong ? s_ + '&hellip;' : s_;
-      };  
-  
-});
 
 
-// Reads the ccss2asn-ela.csv and ccss2asn-math.csv from local server to populate Alignment Array
-function readAlignmentDataFromFiles() {
- $.ajax({
-        type: "GET",
-        url: "ccss2asn-math.csv",
-        dataType: "text",
-        success: function(data) {processDataForAlignmentArray(data);}
-     });
- $.ajax({
-        type: "GET",
-        url: "ccss2asn-ela.csv",
-        dataType: "text",
-        success: function(data) {processDataForAlignmentArray(data);}
-     });	 
-}
-	 
-function processDataForAlignmentArray(allText)	{
-  var reader = new FileReader();
-  reader.readAsText(allText);
-  var output = $.csv2Array(allText);
-  			for (var i = 1; i < output.length-1; i++)
-			{
-				dotNotationDisplayArray.push(output[i][2]);
-			}
-}
+
 
 
 
@@ -210,38 +139,8 @@ function clearAllPopovers(){
 	$("#flyoutLabel6").popover('hide');  
 };  
   
-// In the Public Folder of LRMISearch is a file Vocabulary.csv that we need to read in
-// We read the file and pass its contents for processing.
 
-function readVocabularyFile() {
- $.ajax({
-        type: "GET",
-		url: "Vocabulary.csv",
-        dataType: "text",
-        success: function(data) {processVocabularyInput(data);}
-     }); 
-}
 
-// We process the contents of the Vocabulary CSV data using csv2Array JS.
-// We then load this data into arrays to ma	
-	
-function processVocabularyInput(allText)	{
-	var reader = new FileReader();
-	reader.readAsText(allText);
-	var output = $.csv2Array(allText);
-  	for (var i = 1; i < output.length-1; i++)
-		{
-		  if (output[i][0] !== "") {window.intendedEndUserRoleArray.push(output[i][0]);}
-		  if (output[i][1] !== "") {window.educationalUseArray.push(output[i][1]);}
-		  if (output[i][2] !== "") {window.typicalAgeRangeArray.push(output[i][2]);}
-		  if (output[i][3] !== "") {window.interactivityTypeArray.push(output[i][3]);}
-		  if (output[i][4] !== "") {window.mediaTypeArray.push(output[i][4]);}
-		  if (output[i][5] !== "") {window.learningResourceTypeArray.push(output[i][5]);}
-		}
-	setFlyoverDivHTML(); 
-				
-}  
-  
 // This function sets the contents of the Filter flyout popovers.
 
 function setFlyoverDivHTML() {
