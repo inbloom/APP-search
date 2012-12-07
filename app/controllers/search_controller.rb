@@ -15,8 +15,9 @@ class SearchController < ApplicationController
         searchResults['response'].each { |r|
           unless r['props'].empty?
             response << {
-                'title' => Rack::Utils.unescape(r['props']['urn:lri:property_type:name'].to_s),
-                'url' => Rack::Utils.unescape(r['props']['urn:lri:property_type:url'].to_s),
+              'title' => Rack::Utils.unescape(r['props']['urn:lri:property_type:name'].to_s),
+              'url' => Rack::Utils.unescape(r['props']['urn:lri:property_type:url'].to_s),
+              'endUser' => Rack::Utils.unescape(r['props']['urn:schema-org:property_type:intended_end_user_role'].to_s),
             }
           end
         }
