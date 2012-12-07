@@ -154,6 +154,28 @@ td.left-column {
 #resultsPane {
   position: absolute;
   padding: 10px;
+  overflow: auto;
+  div.result {
+    margin-bottom: 10px;
+    p {
+      padding: 0;
+      margin: 0;
+    }
+    em {
+      cursor: pointer;
+      font-style: normal;
+      text-decoration: underline;
+      a {
+        color: #12c;
+        font-weight: bold;
+      }
+    }
+    cite {
+      color: #093;
+      font-size: 0.9em;
+      font-style: normal;
+    }
+  }
 }
 
 a.filter {
