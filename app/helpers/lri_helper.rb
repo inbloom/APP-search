@@ -67,6 +67,14 @@ module LriHelper
     @@failures
   end
 
+
+  def self.wildcard_search query
+    query = ".*" + Rack::Utils.escape(query) + ".*"
+    request = {"urn:lri:property_type:name" => query}
+    self.request :quickSearch, request
+  end
+
+
   private
 
   # Take any incoming key and map it to the correct LRI output key (Just keys.. not values)
@@ -191,6 +199,7 @@ module LriHelper
         :createEntity     => '/entity/create?opts={"access_token":"letmein"}&q=',
         :getEnumerations  => '/entity/search?opts={"use_cached":false}&q=',
         :search           => '/entity/search?opts={"details":true,"use_cached":false}&q=',
+        :quickSearch      => '/entity/search?opts={"details":false,"use_cached":false}&q=',
     }
     # If not one of our request types, dump out
     return false unless requestTypes[type].present?

@@ -1,35 +1,14 @@
 $(function() {
 
-    // Setup Arrays for Filter Results Data Display
-    window.intendedEndUserRoleArray = new Array();
-    window.educationalUseArray = new Array();
-    window.typicalAgeRangeArray = new Array();
-    window.interactivityTypeArray = new Array();
-    window.learningResourceTypeArray = new Array();
-    window.mediaTypeArray = new Array();
-
-    // Setup Arrays for Filter Results Data Selection
-    window.intendedEndUserRoleFilterArray = new Array();
-    window.educationalUseFilterArray = new Array();
-    window.typicalAgeRangeFilterArray = new Array();
-    window.interactivityTypeFilterArray = new Array();
-    window.learningResourceTypeFilterArray = new Array();
-    window.mediaTypeFilterArray = new Array();
+    searchResults = []
 
     // Setup Dot Notation Array
-    window.dotNotationDisplayArray = new Array();
+    dotNotationDisplayArray = new Array();
     readAlignmentDataFromFiles();
     var $dotNotation = $( '#dotNotationInput');
     $dotNotation.typeahead({source: dotNotationDisplayArray, items:8});
 
-    // Setup Variables For Search Stats and Results
-    window.resultsReturned = 0;
-    window.resultsStart = 0;
-    window.resultSetSize = 10;
-
-    // Read Vocabular CSV Into Filter Results Data Arrays
-    readVocabularyFile();
-
+    // Resize the results pane based on our browser (dumb.. but feh)
     $("#resultsPane").css({
         top:  $("#searchBody").position().top + $("#searchBody").height(),
         left: $("#filterFields").position().left + $("#filterFields").width(),
@@ -37,21 +16,61 @@ $(function() {
         bottom: $("div.footer").height()
     });
 
-    // Real popover code
+    // Refactoring the standard twitter popover code to allow mouse over popovers
     $("a[rel=popovers]").popover({
-            trigger: 'manual',
-            animate: false,
-            html: true,
-            placement: 'right',
-            content : function() {
-                return $(this).siblings('div.flyout').html();
+        trigger: 'manual',
+        animate: false,
+        html: true,
+        placement: 'right',
+        content : function() {
+            return $(this).siblings('div.flyout').html();
+        },
+        template: '<div class="popover" onmouseover="$(this).mouseleave(function() {$(this).hide(); });"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>'
+    }).mouseenter(function(e) {
+        $("a[rel=popovers]").not(this).popover('hide');
+        $(this).popover('show');
+    });
+
+    // On button click search
+    $("#searchButton").on('click', function() {
+        performSearch();
+    });
+
+    // On Enter search
+    $("#searchInput").on('keydown', function(e) {
+        if (e.keyCode == 13) {
+            performSearch();
+        }
+    });
+
+    // Fires the search
+    function performSearch() {
+        var query = $('#searchInput').val();
+        $.ajax({
+            type : "POST",
+            dataType : 'json',
+            url  : "/search/full_search",
+            data : { query : query },
+            success : function(xhr) {
+                searchResults = xhr
+                parseSearchResults();
             },
-            template: '<div class="popover" onmouseover="$(this).mouseleave(function() {$(this).hide(); });"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>'
-        }).click(function(e) {
-//            e.preventDefault();
-        }).mouseenter(function(e) {
-            $("a[rel=popovers]").not(this).popover('hide');
-            $(this).popover('show');
+            error : function(xhr, txtStatus, errThrown) {
+
+            }
         });
+    }
 
 });
+
+// Parse out the results
+function parseSearchResults() {
+    $("#resultsPane").empty();
+
+    for (i in searchResults) {
+        var r = searchResults[i];
+        $("#resultsPane").append($("<div class='result'><a href='"+r['url']+"' target='_blank'>"+r['title']+"</a></div>"));
+
+    }
+}
+
