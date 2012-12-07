@@ -30,4 +30,11 @@ $(function() {
     // Read Vocabular CSV Into Filter Results Data Arrays
     readVocabularyFile();
 
+    $("#resultsPane").css({
+        top:  $("#searchBody").position().top + $("#searchBody").height(),
+        left: $("#filterFields").position().left + $("#filterFields").width(),
+        right: 0,
+        bottom: $("div.footer").height()
+    });
+
 });

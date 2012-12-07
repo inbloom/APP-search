@@ -3,76 +3,104 @@
 <div class='container-fluid'>
   <%= render :partial => 'navbar' %>
 
-  <div>
   <table class="table" style="border:0px;" id="searchBody">
     <tr class="warning">
-      <td style="width:25%;color:white;background-color:#45aeea;vertical-align:middle;text-align:center;">
-        <div id="resultStats"></div>
+      <td class='left-column'>
+        <div id="resultStats">
+          &nbsp;
+        </div>
       </td>
-      <td style="width:75%;">
-            <input style="width:85%;margin-top:7px;" type="text" name="searchInput" id="searchInput">
-            <button class="btn" onClick="window.resultsStart = 0;displaySearchResults()">Search</button>
+      <td class='main-column'>
+        <input type="text" name="searchInput" id="searchInput" placeholder="Query...">
+        <button class="btn" onClick="window.resultsStart = 0;displaySearchResults()">Search</button>
+      </td>
+    </tr>
+  </table>
+
+  <!-- #TODO I HATE THAT THIS IS DONE WITH TABLES -->
+  <table class="table" id="filterFields">
+    <tr>
+      <td>
+        <strong>FILTER YOUR RESULTS</strong>
+      </td>
+    </tr>
+    <tr>
+      <td id="flyoutLabel1" rel="popover" data-title="Intended End User Role" onmouseover="flyoutLabelMouseOver(flyoutLabel1);" onmouseout="flyoutLabelMouseOut(flyoutLabel1);">
+        Intended End User Role <i class="icon-chevron-right icon-white pull-right"/>
+      </td>
+    </tr>
+    <tr>
+      <td id="filter1" class='filters'>
 
       </td>
     </tr>
     <tr>
-      <td style="background-color:#8accf2;color:white;"><b>FILTER YOUR RESULTS</b><br/>
-        <table class="table" id="filterFields">
-          <tr>
-            <td id="flyoutLabel1" rel="popover" data-title="Intended End User Role" onmouseover="flyoutLabelMouseOver(flyoutLabel1);" onmouseout="flyoutLabelMouseOut(flyoutLabel1);">Intended End User Role <i class="icon-chevron-right icon-white pull-right"/></td>
-          </tr>
-          <tr>
-            <td id="filter1" style="background-color:#5cb8ed;border:1px #fff solid;display:none;"></td>
-          </tr>
-          <tr>
-            <td id="flyoutLabel2" rel="popover" data-title="Educational Use" onmouseover="flyoutLabelMouseOver(flyoutLabel2);" onmouseout="flyoutLabelMouseOut(flyoutLabel2);">Educational Use <i class="icon-chevron-right icon-white pull-right"/></td>
-          </tr>
-          <tr>
-            <td id="filter2" style="background-color:#5cb8ed;border:1px #fff solid;display:none;"></td>
-          </tr>
-          <tr>
-            <td id="flyoutLabel3" rel="popover" data-title="Typical Age Range" onmouseover="flyoutLabelMouseOver(flyoutLabel3);" onmouseout="flyoutLabelMouseOut(flyoutLabel3);">Typical Age Range <i class="icon-chevron-right icon-white pull-right"/></td>
-          </tr>
-          <tr>
-            <td id="filter3" style="background-color:#5cb8ed;border:1px #fff solid;display:none;"></td>
-          </tr>
-          <tr>
-            <td id="flyoutLabel4" rel="popover" data-title="Interactivity Type" onmouseover="flyoutLabelMouseOver(flyoutLabel4);" onmouseout="flyoutLabelMouseOut(flyoutLabel4);">Interactivity Type <i class="icon-chevron-right icon-white pull-right"/></td>
-          </tr>
-          <tr>
-            <td id="filter4" style="background-color:#5cb8ed;border:1px #fff solid;display:none;"></td>
-          </tr>
-          <tr>
-            <td id="flyoutLabel5" rel="popover" data-title="Learning Resource Type" onmouseover="flyoutLabelMouseOver(flyoutLabel5);" onmouseout="flyoutLabelMouseOut(flyoutLabel5);">Learning Resource Type <i class="icon-chevron-right icon-white pull-right"/></td>
-          </tr>
-          <tr>
-            <td id="filter5" style="background-color:#5cb8ed;border:1px #fff solid;display:none;"></td>
-          </tr>
-          <tr>
-            <td id="flyoutLabel6" rel="popover" data-title="Media Type" onmouseover="flyoutLabelMouseOver(flyoutLabel6);" onmouseout="flyoutLabelMouseOut(flyoutLabel6);">Media Type <i class="icon-chevron-right icon-white pull-right"/></td>
-          </tr>
-          <tr>
-            <td id="filter6" style="background-color:#5cb8ed;border:1px #fff solid;display:none;"></td>
-          </tr>
-          <tr>
-            <td>Publisher</td>
-          </tr>
-          <tr>
-            <td><input type="text" style="width:90%;" name="publisherInput" id="publisherInput"></td>
-          </tr>
-          <tr>
-          <td>Dot Notation</td>
-          </tr>
-          <tr>
-            <td><input type="text" style="width:90%;" name="dotNotationInput" id="dotNotationInput"></td>
-          </tr>
-        </table>
+      <td id="flyoutLabel2" rel="popover" data-title="Educational Use" onmouseover="flyoutLabelMouseOver(flyoutLabel2);" onmouseout="flyoutLabelMouseOut(flyoutLabel2);">
+        Educational Use <i class="icon-chevron-right icon-white pull-right"/>
       </td>
-      <td rowspan=2 id="resultsPane" style="width:100%;">Waiting for Search</td>
+    </tr>
+    <tr>
+      <td id="filter2" class='filters'>
+
+      </td>
+    </tr>
+    <tr>
+      <td id="flyoutLabel3" rel="popover" data-title="Typical Age Range" onmouseover="flyoutLabelMouseOver(flyoutLabel3);" onmouseout="flyoutLabelMouseOut(flyoutLabel3);">
+        Typical Age Range <i class="icon-chevron-right icon-white pull-right"/>
+      </td>
+    </tr>
+    <tr>
+      <td id="filter3" class='filters'>
+
+      </td>
+    </tr>
+    <tr>
+      <td id="flyoutLabel4" rel="popover" data-title="Interactivity Type" onmouseover="flyoutLabelMouseOver(flyoutLabel4);" onmouseout="flyoutLabelMouseOut(flyoutLabel4);">
+        Interactivity Type <i class="icon-chevron-right icon-white pull-right"/>
+      </td>
+    </tr>
+    <tr>
+      <td id="filter4" class='filters'>
+
+      </td>
+    </tr>
+    <tr>
+      <td id="flyoutLabel5" rel="popover" data-title="Learning Resource Type" onmouseover="flyoutLabelMouseOver(flyoutLabel5);" onmouseout="flyoutLabelMouseOut(flyoutLabel5);">
+        Learning Resource Type <i class="icon-chevron-right icon-white pull-right"/>
+      </td>
+    </tr>
+    <tr>
+      <td id="filter5" class='filters'>
+
+      </td>
+    </tr>
+    <tr>
+      <td id="flyoutLabel6" rel="popover" data-title="Media Type" onmouseover="flyoutLabelMouseOver(flyoutLabel6);" onmouseout="flyoutLabelMouseOut(flyoutLabel6);">
+        Media Type <i class="icon-chevron-right icon-white pull-right"/>
+      </td>
+    </tr>
+    <tr>
+      <td id="filter6" class='filters'>
+
+      </td>
+    </tr>
+    <tr>
+      <td>
+        Publisher
+        <input type="text" name="publisherInput" id="publisherInput">
+      </td>
+    </tr>
+    <tr>
+      <td>
+        Dot Notation
+        <input type="text" name="dotNotationInput" id="dotNotationInput">
+      </td>
     </tr>
   </table>
-  </div>
 
+  <div id="resultsPane">
+
+  </div>
 
   <div id="popoverflyoutLabel1" style="display: none">
     <div>This is your div content</div>
@@ -100,3 +128,5 @@
 
 
 </div>
+
+<%= render :partial => 'home/slc/footer' %>

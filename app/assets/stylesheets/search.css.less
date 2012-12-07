@@ -8,10 +8,14 @@
   filter: e(%("progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=%d,endColorstr=%d)", @color1, @color3));
 }
 
+/** Custom Icons -- Fix **/
+[class^="icon-"], [class*=" icon-"],
+[class^="icon-"]::before, [class*=" icon-"]::before {
+  content: none !important;
+}
 
 body {
   overflow: hidden;
-  background: url(/assets/LRMI.png) top right no-repeat;
 }
 
 div.header {
@@ -39,6 +43,10 @@ div.footer {
 
 .disabled.hidden {
   display: none;
+}
+
+input[type=text] {
+  margin-bottom: 0;
 }
 
 div.header-title {
@@ -116,4 +124,34 @@ div.tag-alignments {
 }
 .typeahead {
   z-index: 10000;
+}
+
+td.left-column {
+  width:260px;
+  color:white;
+  background-color:#45aeea !important;
+  vertical-align:middle;
+  text-align:center;
+}
+
+#searchBody {
+  margin-bottom: 0;
+}
+#filterFields {
+  color: white;
+  background-color:#8accf2;
+  width: 276px;
+  position: relative;
+  top: 0;
+  left: 0;
+}
+#resultsPane {
+  position: absolute;
+  padding: 10px;
+}
+
+td.filters {
+  background-color:#5cb8ed;
+  border:1px #fff solid;
+  display:none;
 }
