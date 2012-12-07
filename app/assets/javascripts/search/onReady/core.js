@@ -37,4 +37,21 @@ $(function() {
         bottom: $("div.footer").height()
     });
 
+    // Real popover code
+    $("a[rel=popovers]").popover({
+            trigger: 'manual',
+            animate: false,
+            html: true,
+            placement: 'right',
+            content : function() {
+                return $(this).siblings('div.flyout').html();
+            },
+            template: '<div class="popover" onmouseover="$(this).mouseleave(function() {$(this).hide(); });"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>'
+        }).click(function(e) {
+//            e.preventDefault();
+        }).mouseenter(function(e) {
+            $("a[rel=popovers]").not(this).popover('hide');
+            $(this).popover('show');
+        });
+
 });

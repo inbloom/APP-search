@@ -144,14 +144,42 @@ td.left-column {
   position: relative;
   top: 0;
   left: 0;
+  a {
+    color: white;
+  }
+  div.flyout {
+    display: none;
+  }
 }
 #resultsPane {
   position: absolute;
   padding: 10px;
 }
 
-td.filters {
+a.filter {
   background-color:#5cb8ed;
-  border:1px #fff solid;
-  display:none;
+  border-bottom:1px #dddddd solid;
+  display:block;
+  padding-left: 10px;
+  line-height: 30px;
+  i {
+    padding-right: 10px;
+    color: white;
+    float: right;
+    margin-top: 8px;
+  }
+}
+a[rel=popovers] {
+  border-left: 0 !important;
+  border-right: 0 !important;
+}
+a[rel=popovers]:hover {
+  background-color: #f8b93b !important;
+}
+div.popover {
+  width: inherit !important;
+}
+div.popover div.items {
+  margin-left: 0;
+  padding: 10px 10px 5px 10px;
 }
