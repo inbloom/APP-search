@@ -115,18 +115,14 @@ $(function() {
 
     // Refactoring the standard twitter popover code to allow mouse over popovers
     $("a[rel=popovers]").popover({
-        trigger: 'manual',
+        trigger: 'click',
         animate: false,
         html: true,
         placement: 'right',
         content : function() {
             return $(this).siblings('div.flyout').html();
         },
-        template: '<div class="popover" onmouseover="$(this).mouseleave(function() {$(this).hide(); });"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>'
-    }).mouseenter(function(e) {
-        $("a[rel=popovers]").clearQueue();
-        $("a[rel=popovers]").not(this).popover('hide');
-        $(this).popover('show');
+        template: '<div class="popover" onmouseover="$(this).mouseleave(function() {$(\'a[rel=popovers]\').popover(\'hide\');});"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>'
     });
 
     // On button click search
@@ -150,6 +146,7 @@ $(function() {
 // Add functionality to checkboxes
 function checkboxOnClicks(id) {
     $("."+id+" input[type=checkbox]").live('click', function(e) {
+        $("a[rel=popovers]").popover('hide');
         var checked = $(this).attr('checked');
         if (checked) {
             $("input[type=checkbox][value="+$(this).val()+"]").attr('checked',checked);
