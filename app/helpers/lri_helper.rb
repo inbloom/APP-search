@@ -70,7 +70,7 @@ module LriHelper
 
   def self.wildcard_search query
     query = ".*" + Rack::Utils.escape(query) + ".*"
-    request = {"urn:lri:property_type:name" => query}
+    request = {"urn:lri:property_type:name" => query, "limit" => '100'}
     self.request :quickSearch, request
   end
 
