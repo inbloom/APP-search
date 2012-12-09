@@ -15,11 +15,13 @@ class SearchController < ApplicationController
         searchResults['response'].each { |r|
           unless r['props'].empty?
             response << {
-              'title'           => Rack::Utils.unescape(r['props']['urn:lri:property_type:name'].to_s),
-              'url'             => Rack::Utils.unescape(r['props']['urn:lri:property_type:url'].to_s),
-              'endUser'         => Rack::Utils.unescape(r['props']['urn:schema-org:property_type:intended_end_user_role'].to_s),
-              'ageRange'        => Rack::Utils.unescape(r['props']['urn:schema-org:property_type:typical_age_range'].to_s),
-              'educationalUse'  => Rack::Utils.unescape(r['props']['urn:schema-org:property_type:educational_use'].to_s),
+              'title'             => Rack::Utils.unescape(r['props']['urn:lri:property_type:name'].to_s),
+              'url'               => Rack::Utils.unescape(r['props']['urn:lri:property_type:url'].to_s),
+              'endUser'           => Rack::Utils.unescape(r['props']['urn:schema-org:property_type:intended_end_user_role'].to_s),
+              'ageRange'          => Rack::Utils.unescape(r['props']['urn:schema-org:property_type:typical_age_range'].to_s),
+              'educationalUse'    => Rack::Utils.unescape(r['props']['urn:schema-org:property_type:educational_use'].to_s),
+              'interactivityType' => Rack::Utils.unescape(r['props']['urn:schema-org:property_type:interactivity_type'].to_s),
+              'learningResource'  => Rack::Utils.unescape(r['props']['urn:schema-org:property_type:learning_resource_type'].to_s),
             }
           end
         }

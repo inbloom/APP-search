@@ -1,23 +1,25 @@
 $(function() {
 
-    searchResults = []
+    searchResults = [];
     searchFilters = {
-        'endUserFilters'        : [],
-        'ageRangeFilters'       : [],
-        'educationalUseFilters' : []
-    }
+        'endUserFilters'            : [],
+        'ageRangeFilters'           : [],
+        'educationalUseFilters'     : [],
+        'interactivityTypeFilters'  : [],
+        'learningResourceFilters'   : []
+    };
 
     filterKeys = {
         
         'endUserFilters' : {
-            'eU001':'Administrator',
-            'eU002':'Mentor',
-            'eU003':'Parent',
-            'eU004':'Peer Tutor',
-            'eU005':'Specialist',
-            'eU006':'Student',
-            'eU007':'Teacher',
-            'eU008':'Team'
+            'end001':'Administrator',
+            'end002':'Mentor',
+            'end003':'Parent',
+            'end004':'Peer Tutor',
+            'end005':'Specialist',
+            'end006':'Student',
+            'end007':'Teacher',
+            'end008':'Team'
         },
 
         'ageRangeFilters' : {
@@ -93,10 +95,45 @@ $(function() {
             'eU058':'Visual/Spatial',
             'eU059':'Word Association',
             'eU060':'Writing'
+        },
+
+        'interactivityTypeFilters' : {
+            'iT001':'Active',
+            'iT002':'Expositive',
+            'iT003':'Mixed'
+        },
+
+        'learningResourceFilters' : {
+            'lR001':'Activity',
+            'lR002':'Assessment',
+            'lR003':'Audio',
+            'lR004':'Broadcast',
+            'lR005':'Calculator',
+            'lR006':'Discussion',
+            'lR007':'E-Mail',
+            'lR008':'Field Trip',
+            'lR009':'Hands-on',
+            'lR010':'In-Person/Speaker',
+            'lR011':'Kinesthetic',
+            'lR012':'Lab Material (Printed Activities - Instruments - Samples...)',
+            'lR013':'Lesson Plan',
+            'lR014':'Manipulative',
+            'lR015':'MBL (Microcomputer Based)',
+            'lR016':'Model',
+            'lR018':'On-Line',
+            'lR019':'Podcast',
+            'lR020':'Presentation',
+            'lR021':'Printed',
+            'lR022':'Quiz',
+            'lR023':'Robotics',
+            'lR024':'Still Image',
+            'lR025':'Test',
+            'lR026':'Video',
+            'lR027':'Wiki',
+            'lR028':'Worksheet'
         }
 
-
-    }
+    };
 
 
     // Setup Dot Notation Array
@@ -140,6 +177,8 @@ $(function() {
     checkboxOnClicks('endUserFilters');
     checkboxOnClicks('ageRangeFilters');
     checkboxOnClicks('educationalUseFilters');
+    checkboxOnClicks('interactivityTypeFilters');
+    checkboxOnClicks('learningResourceFilters');
 
 });
 
@@ -162,6 +201,8 @@ function checkboxOnClicks(id) {
 function unCheck(id) {
     $("input[type=checkbox][value="+id+"]").removeAttr('checked');
     $("a."+id).remove();
+
+    updateFilters();
 }
 
 
@@ -183,6 +224,18 @@ function updateFilters() {
     searchFilters['educationalUseFilters'] = [];
     $("div.flyout div.educationalUseFilters input[type=checkbox][checked=checked]").each(function() {
         searchFilters['educationalUseFilters'].push(filterKeys.educationalUseFilters[$(this).val()]);
+    });
+
+    // Interactivity Type Filters
+    searchFilters['interactivityTypeFilters'] = [];
+    $("div.flyout div.interactivityTypeFilters input[type=checkbox][checked=checked]").each(function() {
+        searchFilters['interactivityTypeFilters'].push(filterKeys.interactivityTypeFilters[$(this).val()]);
+    });
+
+    // Learning Resource Type Filters
+    searchFilters['learningResourceFilters'] = [];
+    $("div.flyout div.learningResourceFilters input[type=checkbox][checked=checked]").each(function() {
+        searchFilters['learningResourceFilters'].push(filterKeys.learningResourceFilters[$(this).val()]);
     });
 
     parseSearchResults();
@@ -249,7 +302,29 @@ function parseSearchResults() {
             }
         }
 
-        if (endUserFound && ageRangeFound && educationalUseFound) {
+        // Interactivity Type Filter
+        var interactivityTypeFound = true;
+        if (searchFilters.interactivityTypeFilters.length != 0) {
+            interactivityTypeFound = false;
+            for (a in searchFilters.interactivityTypeFilters) {
+                if (r['interactivityType'].match(searchFilters.interactivityTypeFilters[a])) {
+                    interactivityTypeFound = true;
+                }
+            }
+        }
+
+        // Interactivity Type Filter
+        var learningResourceFound = true;
+        if (searchFilters.learningResourceFilters.length != 0) {
+            learningResourceFound = false;
+            for (a in searchFilters.learningResourceFilters) {
+                if (r['learningResource'].match(searchFilters.learningResourceFilters[a])) {
+                    learningResourceFound = true;
+                }
+            }
+        }
+
+        if (endUserFound && ageRangeFound && educationalUseFound && interactivityTypeFound && learningResourceFound) {
             $("#resultsPane").append($("<div class='result'><p><em><a href='"+r['url']+"' target='_blank'>"+r['title']+"</a></em></p><cite>"+r['url']+"</cite></div>"));
         }
     }
