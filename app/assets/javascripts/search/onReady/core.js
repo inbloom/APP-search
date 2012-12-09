@@ -198,46 +198,22 @@ function checkboxOnClicks(id) {
     });
 }
 
+// If a user clicks the filter item we need to be able to unchecked based on that click.
 function unCheck(id) {
     $("input[type=checkbox][value="+id+"]").removeAttr('checked');
     $("a."+id).remove();
-
     updateFilters();
 }
 
-
 // Update search filters
 function updateFilters() {
-    // End User Filters
-    searchFilters['endUserFilters'] = [];
-    $("div.flyout div.endUserFilters input[type=checkbox][checked=checked]").each(function() {
-        searchFilters['endUserFilters'].push(filterKeys.endUserFilters[$(this).val()]);
-    });
-
-    // Age Range Filters
-    searchFilters['ageRangeFilters'] = [];
-    $("div.flyout div.ageRangeFilters input[type=checkbox][checked=checked]").each(function() {
-        searchFilters['ageRangeFilters'].push(filterKeys.ageRangeFilters[$(this).val()]);
-    });
-
-    // Educational Use Filters
-    searchFilters['educationalUseFilters'] = [];
-    $("div.flyout div.educationalUseFilters input[type=checkbox][checked=checked]").each(function() {
-        searchFilters['educationalUseFilters'].push(filterKeys.educationalUseFilters[$(this).val()]);
-    });
-
-    // Interactivity Type Filters
-    searchFilters['interactivityTypeFilters'] = [];
-    $("div.flyout div.interactivityTypeFilters input[type=checkbox][checked=checked]").each(function() {
-        searchFilters['interactivityTypeFilters'].push(filterKeys.interactivityTypeFilters[$(this).val()]);
-    });
-
-    // Learning Resource Type Filters
-    searchFilters['learningResourceFilters'] = [];
-    $("div.flyout div.learningResourceFilters input[type=checkbox][checked=checked]").each(function() {
-        searchFilters['learningResourceFilters'].push(filterKeys.learningResourceFilters[$(this).val()]);
-    });
-
+    // Iterate through all the known search filters, find the checkbox list for them and then filter based on those
+    for (key in searchFilters) {
+        searchFilters[key] = [];
+        $("div.flyout div." + key + " input[type=checkbox][checked=checked]").each(function() {
+            searchFilters[key].push(filterKeys[key][$(this).val()]);
+        });
+    }
     parseSearchResults();
 }
 
@@ -268,6 +244,8 @@ function parseSearchResults() {
 
     for (i in searchResults) {
         var r = searchResults[i];
+
+        // TODO Refactor this so it's dry..
 
         // End User Filter
         var endUserFound = true;
