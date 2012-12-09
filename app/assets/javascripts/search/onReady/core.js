@@ -6,7 +6,8 @@ $(function() {
         'ageRangeFilters'           : [],
         'educationalUseFilters'     : [],
         'interactivityTypeFilters'  : [],
-        'learningResourceFilters'   : []
+        'learningResourceFilters'   : [],
+        'mediaTypeFilters'          : []
     };
 
     filterKeys = {
@@ -131,6 +132,46 @@ $(function() {
             'lR026':'Video',
             'lR027':'Wiki',
             'lR028':'Worksheet'
+        },
+        
+        'mediaTypeFilters' : {
+            'mT001':'Audio CD',
+            'mT002':'Audiotape',
+            'mT003':'Calculator',
+            'mT004':'CD-I',
+            'mT005':'CD-ROM',
+            'mT006':'Diskette',
+            'mT007':'Duplication Master',
+            'mT008':'DVD/ Blu-ray',
+            'mT009':'E-Mail',
+            'mT010':'Electronic Slides',
+            'mT011':'Field Trip',
+            'mT012':'Filmstrip',
+            'mT013':'Flash',
+            'mT014':'Image',
+            'mT015':'In-Person/Speaker',
+            'mT016':'Interactive Whiteboard',
+            'mT017':'Manipulative',
+            'mT018':'MBL (Microcomputer Based)',
+            'mT019':'Microfiche',
+            'mT020':'Overhead',
+            'mT021':'Pamphlet',
+            'mT022':'PDF',
+            'mT023':'Person-to-Person',
+            'mT024':'Phonograph Record',
+            'mT025':'Photo',
+            'mT026':'Podcast',
+            'mT027':'Printed',
+            'mT028':'Radio',
+            'mT029':'Robotics',
+            'mT030':'Satellite',
+            'mT031':'Slides',
+            'mT032':'Television',
+            'mT033':'Transparency',
+            'mT034':'Video Conference',
+            'mT035':'Videodisc',
+            'mT036':'Webpage',
+            'mT037':'Wiki'
         }
 
     };
@@ -151,6 +192,9 @@ $(function() {
     });
 
     // Refactoring the standard twitter popover code to allow mouse over popovers
+    // Note, popover content is injected into the pop over each time you draw it from the sibling flyout div.
+    // So the checkboxes in the page which are hidden get squeezed into the popover.
+    // All checkbox states in the flyover are ephemeral but the hidden checkboxes aren't.
     $("a[rel=popovers]").popover({
         trigger: 'click',
         animate: false,
@@ -179,6 +223,7 @@ $(function() {
     checkboxOnClicks('educationalUseFilters');
     checkboxOnClicks('interactivityTypeFilters');
     checkboxOnClicks('learningResourceFilters');
+    checkboxOnClicks('mediaTypeFilters');
 
 });
 
@@ -302,7 +347,18 @@ function parseSearchResults() {
             }
         }
 
-        if (endUserFound && ageRangeFound && educationalUseFound && interactivityTypeFound && learningResourceFound) {
+        // Media Type Filter
+        var mediaTypeFound = true;
+        if (searchFilters.mediaTypeFilters.length != 0) {
+            mediaTypeFound = false;
+            for (a in searchFilters.mediaTypeFilters) {
+                if (r['mediaType'].match(searchFilters.mediaTypeFilters[a])) {
+                    mediaTypeFound = true;
+                }
+            }
+        }
+
+        if (endUserFound && ageRangeFound && educationalUseFound && interactivityTypeFound && learningResourceFound && mediaTypeFound) {
             $("#resultsPane").append($("<div class='result'><p><em><a href='"+r['url']+"' target='_blank'>"+r['title']+"</a></em></p><cite>"+r['url']+"</cite></div>"));
         }
     }

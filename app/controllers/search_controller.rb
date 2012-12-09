@@ -22,6 +22,7 @@ class SearchController < ApplicationController
               'educationalUse'    => Rack::Utils.unescape(r['props']['urn:schema-org:property_type:educational_use'].to_s),
               'interactivityType' => Rack::Utils.unescape(r['props']['urn:schema-org:property_type:interactivity_type'].to_s),
               'learningResource'  => Rack::Utils.unescape(r['props']['urn:schema-org:property_type:learning_resource_type'].to_s),
+              'mediaType'         => Rack::Utils.unescape(r['props']['urn:schema-org:property_type:physical_media_type'].to_s),
             }
           end
         }
