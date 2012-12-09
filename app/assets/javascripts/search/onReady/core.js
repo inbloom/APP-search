@@ -1,6 +1,7 @@
 $(function() {
 
     searchResults = [];
+    searchResultsFiltered = [];
     searchFilters = {
         'endUserFilters'            : [],
         'ageRangeFilters'           : [],
@@ -9,6 +10,7 @@ $(function() {
         'learningResourceFilters'   : [],
         'mediaTypeFilters'          : []
     };
+    pagination = {};
 
     filterKeys = {
         
@@ -211,11 +213,23 @@ $(function() {
         performSearch();
     });
 
+    $("#paginationLimit").on('change', function() {
+        pagination['page'] = 1;
+        updateDisplay();
+    });
+
     // On Enter search
     $("#searchInput").on('keydown', function(e) {
         if (e.keyCode == 13) {
             performSearch();
         }
+    });
+
+    // On click of the pagination buttons do that thing.
+    $(".paginationPageButtons li a").live("click", function() {
+        var page = $(this).attr('href').substr(1);
+        updateDisplay(page);
+        return false;
     });
 
     checkboxOnClicks('endUserFilters');
@@ -285,6 +299,7 @@ function performSearch() {
 
 // Parse out the results
 function parseSearchResults() {
+    searchResultsFiltered = [];
     $("#resultsPane").empty();
 
     for (i in searchResults) {
@@ -358,9 +373,45 @@ function parseSearchResults() {
             }
         }
 
-        if (endUserFound && ageRangeFound && educationalUseFound && interactivityTypeFound && learningResourceFound && mediaTypeFound) {
-            $("#resultsPane").append($("<div class='result'><p><em><a href='"+r['url']+"' target='_blank'>"+r['title']+"</a></em></p><cite>"+r['url']+"</cite></div>"));
+        if (endUserFound &&
+            ageRangeFound &&
+            educationalUseFound &&
+            interactivityTypeFound &&
+            learningResourceFound &&
+            mediaTypeFound) {
+                searchResultsFiltered.push(r);
         }
     }
+    // Okay now that we have our filtered results
+    updateDisplay();
 }
 
+// Step through the filtered search results and use them
+function updateDisplay(page) {
+    // Define our pagination
+    pagination['page'] = parseInt(page) || pagination['page'] || 1;
+    pagination['limit'] = parseInt($('#paginationLimit').val());
+    pagination['pages'] = Math.ceil(searchResultsFiltered.length / pagination['limit']);
+    pagination['offset'] = (pagination['limit'] * pagination['page']) - pagination['limit'];
+    // scrub the results
+    $("#resultsPane").empty();
+
+    // Draw the number of items in our filter that our pagination limit allows
+    for (i = pagination['offset']; i <= (pagination['offset'] + pagination['limit']); i++) {
+        if (searchResultsFiltered[i] == undefined) break;
+        var r = searchResultsFiltered[i];
+        $("#resultsPane").append($("<div class='result'><p><em><a href='"+r['url']+"' target='_blank'>"+r['title']+"</a></em></p><cite>"+r['url']+"</cite></div>"));
+    }
+
+    if (pagination['pages'] != 1) {
+        // Inject the pagination
+        $("#resultsPane").append($('<div class="pagination pull-right"><ul class="paginationPageButtons"></ul></div>'));
+        $(".paginationPageButtons").append($('<li class="'+((pagination['page']==1)?"disabled":"")+'"><a href="#'+1+'"> &lt;&lt; </a></li>'));
+        for (i = 1; i <= pagination['pages']; i++) {
+            $(".paginationPageButtons").append($("<li class='"+((i==pagination['page'])?'active':'')+"'><a href='#"+i+"'>"+i+"</a></li>"));
+        }
+        $(".paginationPageButtons").append($('<li class="'+((pagination['page']==pagination['pages'])?'disabled':'')+'"><a href="#'+pagination['pages']+'"> &gt;&gt; </a></li>'));
+    }
+
+
+}
