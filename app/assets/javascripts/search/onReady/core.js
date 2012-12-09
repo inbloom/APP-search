@@ -397,14 +397,16 @@ function updateDisplay(page) {
     $("#resultsPane").empty();
 
     // Draw the number of items in our filter that our pagination limit allows
-    for (i = pagination['offset']; i <= (pagination['offset'] + pagination['limit']); i++) {
+    var countShowing = 0;
+    for (i = pagination['offset']; i < (pagination['offset'] + pagination['limit']); i++) {
         if (searchResultsFiltered[i] == undefined) break;
         var r = searchResultsFiltered[i];
         $("#resultsPane").append($("<div class='result'><p><em><a href='"+r['url']+"' target='_blank'>"+r['title']+"</a></em></p><cite>"+r['url']+"</cite></div>"));
+        countShowing++;
     }
 
+    // Inject the pagination buttons
     if (pagination['pages'] != 1) {
-        // Inject the pagination
         $("#resultsPane").append($('<div class="pagination pull-right"><ul class="paginationPageButtons"></ul></div>'));
         $(".paginationPageButtons").append($('<li class="'+((pagination['page']==1)?"disabled":"")+'"><a href="#'+1+'"> &lt;&lt; </a></li>'));
         for (i = 1; i <= pagination['pages']; i++) {
@@ -413,5 +415,6 @@ function updateDisplay(page) {
         $(".paginationPageButtons").append($('<li class="'+((pagination['page']==pagination['pages'])?'disabled':'')+'"><a href="#'+pagination['pages']+'"> &gt;&gt; </a></li>'));
     }
 
+    $("span.showing-text").html("Showing " + (pagination['offset'] + 1) + " to " + (pagination['offset'] + countShowing) + " of " + searchResultsFiltered.length + " Results");
 
 }
