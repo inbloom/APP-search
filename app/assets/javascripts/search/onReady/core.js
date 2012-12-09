@@ -280,7 +280,7 @@ function updateFilters() {
 // Fires the search
 function performSearch() {
     $("#resultsPane").empty();
-    $("#resultsPane").append($("<p>Searching...</p>"));
+    $("#resultsPane").append($("<h5>Searching...</h5>"));
 
     var query = $('#searchInput').val();
     $.ajax({
@@ -406,7 +406,7 @@ function updateDisplay(page) {
     }
 
     // Inject the pagination buttons
-    if (pagination['pages'] != 1) {
+    if (pagination['pages'] > 1) {
         $("#resultsPane").append($('<div class="pagination pull-right"><ul class="paginationPageButtons"></ul></div>'));
         $(".paginationPageButtons").append($('<li class="'+((pagination['page']==1)?"disabled":"")+'"><a href="#'+1+'"> &lt;&lt; </a></li>'));
         for (i = 1; i <= pagination['pages']; i++) {
@@ -415,6 +415,12 @@ function updateDisplay(page) {
         $(".paginationPageButtons").append($('<li class="'+((pagination['page']==pagination['pages'])?'disabled':'')+'"><a href="#'+pagination['pages']+'"> &gt;&gt; </a></li>'));
     }
 
-    $("span.showing-text").html("Showing " + (pagination['offset'] + 1) + " to " + (pagination['offset'] + countShowing) + " of " + searchResultsFiltered.length + " Results");
+    if (searchResultsFiltered.length > 1) {
+        $("span.showing-text").html("Showing " + (pagination['offset'] + 1) + " to " + (pagination['offset'] + countShowing) + " of " + searchResultsFiltered.length + " Results");
+    } else {
+        $("#resultsPane").append("<h5>It appears your search returned no results.</h5>");
+    }
+
+
 
 }
