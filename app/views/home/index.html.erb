@@ -13,6 +13,13 @@
       <td class='main-column'>
         <input type="text" name="searchInput" id="searchInput" placeholder="Enter Search Query...">
         <button class="btn" id="searchButton">Search</button>
+
+        <select class='pull-right' id='paginationLimit'>
+          <option value='10'>Show 10 Results</option>
+          <option value='25'>Show 25 Results</option>
+          <option value='50'>Show 50 Results</option>
+          <option value='100'>Show 100 Results</option>
+        </select>
       </td>
     </tr>
   </table>
@@ -243,121 +250,11 @@
     </li>
     <span id="mediaTypeFilters">
     </span>
-
-
   </ul>
-
-
-
-
-  <!-- #TODO I HATE THAT THIS IS DONE WITH TABLES -->
-  <!--table class="table" id="filterFields">
-    <tr>
-      <td>
-        <strong>FILTER YOUR RESULTS</strong>
-      </td>
-    </tr>
-    <tr>
-      <td>
-      </td>
-    </tr>
-    <tr>
-      <td id="filter1" class='filters'>
-
-      </td>
-    </tr>
-    <tr>
-      <td id="flyoutLabel2" rel="popover" data-title="Educational Use" onmouseover="flyoutLabelMouseOver(flyoutLabel2);" onmouseout="flyoutLabelMouseOut(flyoutLabel2);">
-        Educational Use <i class="icon-chevron-right icon-white pull-right"/>
-      </td>
-    </tr>
-    <tr>
-      <td id="filter2" class='filters'>
-
-      </td>
-    </tr>
-    <tr>
-      <td id="flyoutLabel3" rel="popover" data-title="Typical Age Range" onmouseover="flyoutLabelMouseOver(flyoutLabel3);" onmouseout="flyoutLabelMouseOut(flyoutLabel3);">
-        Typical Age Range <i class="icon-chevron-right icon-white pull-right"/>
-      </td>
-    </tr>
-    <tr>
-      <td id="filter3" class='filters'>
-
-      </td>
-    </tr>
-    <tr>
-      <td id="flyoutLabel4" rel="popover" data-title="Interactivity Type" onmouseover="flyoutLabelMouseOver(flyoutLabel4);" onmouseout="flyoutLabelMouseOut(flyoutLabel4);">
-        Interactivity Type <i class="icon-chevron-right icon-white pull-right"/>
-      </td>
-    </tr>
-    <tr>
-      <td id="filter4" class='filters'>
-
-      </td>
-    </tr>
-    <tr>
-      <td id="flyoutLabel5" rel="popover" data-title="Learning Resource Type" onmouseover="flyoutLabelMouseOver(flyoutLabel5);" onmouseout="flyoutLabelMouseOut(flyoutLabel5);">
-        Learning Resource Type <i class="icon-chevron-right icon-white pull-right"/>
-      </td>
-    </tr>
-    <tr>
-      <td id="filter5" class='filters'>
-
-      </td>
-    </tr>
-    <tr>
-      <td id="flyoutLabel6" rel="popover" data-title="Media Type" onmouseover="flyoutLabelMouseOver(flyoutLabel6);" onmouseout="flyoutLabelMouseOut(flyoutLabel6);">
-        Media Type <i class="icon-chevron-right icon-white pull-right"/>
-      </td>
-    </tr>
-    <tr>
-      <td id="filter6" class='filters'>
-
-      </td>
-    </tr>
-    <tr>
-      <td>
-        Publisher
-        <input type="text" name="publisherInput" id="publisherInput">
-      </td>
-    </tr>
-    <tr>
-      <td>
-        Dot Notation
-        <input type="text" name="dotNotationInput" id="dotNotationInput">
-      </td>
-    </tr>
-  </table-->
 
   <div id="resultsPane">
 
   </div>
-
-  <div id="popoverflyoutLabel1" style="display: none">
-    <div>This is your div content</div>
-  </div>
-
-  <div id="popoverflyoutLabel2" style="display: none">
-    <div>This is your div content</div>
-  </div>
-
-  <div id="popoverflyoutLabel3" style="display: none">
-    <div>This is your div content</div>
-  </div>
-
-  <div id="popoverflyoutLabel4" style="display: none">
-    <div>This is your div content</div>
-  </div>
-
-  <div id="popoverflyoutLabel5" style="display: none">
-    <div>This is your div content</div>
-  </div>
-
-  <div id="popoverflyoutLabel6" style="display: none">
-    <div>This is your div content</div>
-  </div>
-
 
 </div>
 
