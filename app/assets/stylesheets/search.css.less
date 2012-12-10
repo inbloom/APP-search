@@ -105,7 +105,7 @@ li a.disabled {
 }
 
 .btn-inverse {
-  .pmLinearGradient(0,#047094,50%,#067097,100%,#037196);
+  .pmLinearGradient(0,#067097,50%,#067097,100%,#067097);
 }
 
 .btn-success {
@@ -132,14 +132,14 @@ div.tag-alignments {
 td.left-column {
   width:260px;
   color:white;
-  background-color:#d6d6d6 !important;
+  background-color:#067097 !important;
   border-top: 1px solid #c8c8c8;
   border-bottom: 1px solid #ddd;
   vertical-align:middle;
   text-align:center;
 }
 td.main-column {
-  background-color:#d6d6d6 !important;
+  background-color:#067097 !important;
   border-top: 1px solid #c8c8c8;
   border-bottom: 1px solid #c8c8c8;
 }
@@ -148,33 +148,29 @@ td.main-column {
   margin-bottom: 0;
 }
 #filterFields {
-  color: black;
-  background-color:#d6d6d6;
+  color: white;
+  background-color:#067097;
   width: 276px;
   position: relative;
   top: 0;
   left: 0;
   a {
-    color: black;
+    color: white;
     i {
       float: right;
       margin-top: 1px;
       line-height: 20px !important;
     }
+    &:hover {
+      color: black;
+    }
   }
   a.filter {
-    color: black;
+    color: white;
     border-bottom:1px #dddddd solid;
     display:block;
-    padding-left: 10px;
+    padding-left: 20px;
     line-height: 30px;
-    &[rel=popovers] {
-      border-left: 0 !important;
-      border-right: 0 !important;
-    }
-    &[rel=popovers]:hover {
-      background-color: #067097 !important;
-    }
   }
   span a i {
     margin-top: 7px;
@@ -184,7 +180,13 @@ td.main-column {
     display: none;
   }
   li > label {
+    padding-top: 5px;
+    padding-bottom: 5px;
     margin-left: 13px;
+  }
+  li a {
+    border: 0;
+    border-bottom:1px #dddddd solid;
   }
 }
 
