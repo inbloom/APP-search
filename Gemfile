@@ -33,7 +33,7 @@ gem 'jquery-rails'
 gem 'jquery-ui-rails'
 # Google Analytics
 gem 'google-analytics-rails'
-
+# Dev only
 group :development, :test do
 # Use thin as webserver
   gem 'thin'
