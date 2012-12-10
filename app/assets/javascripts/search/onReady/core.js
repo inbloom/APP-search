@@ -220,6 +220,10 @@ $(function() {
         updateDisplay();
     });
 
+    $("#publisherFilter").on('keyup', function() {
+        parseSearchResults();
+    });
+
     // On Enter search
     $("#searchInput").on('keydown', function(e) {
         if (e.keyCode == 13) {
@@ -373,12 +377,23 @@ function parseSearchResults() {
             }
         }
 
+        // Publisher Filter
+        var publisherFilterFound = true;
+        var publisherFilter = $("#publisherFilter").val().toLowerCase();
+        if (publisherFilter != "") {
+            publisherFilterFound = false;
+            if (r['publisher'].toLowerCase().match(publisherFilter)) {
+                publisherFilterFound = true;
+            }
+        }
+
         if (endUserFound &&
             ageRangeFound &&
             educationalUseFound &&
             interactivityTypeFound &&
             learningResourceFound &&
-            mediaTypeFound) {
+            mediaTypeFound &&
+            publisherFilterFound) {
                 searchResultsFiltered.push(r);
         }
     }
@@ -416,7 +431,7 @@ function updateDisplay(page) {
         $(".paginationPageButtons").append($('<li class="'+((pagination['page']==pagination['pages'])?'disabled':'')+'"><a href="#'+pagination['pages']+'"> &gt;&gt; </a></li>'));
     }
 
-    if (searchResultsFiltered.length > 1) {
+    if (searchResultsFiltered.length >= 1) {
         $("span.showing-text").html("Showing " + (pagination['offset'] + 1) + " to " + (pagination['offset'] + countShowing) + " of " + searchResultsFiltered.length + " Results");
     } else {
         $("#resultsPane").append("<h5>It appears your search returned no results.</h5>");
