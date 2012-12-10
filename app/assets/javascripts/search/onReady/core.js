@@ -232,12 +232,10 @@ $(function() {
         return false;
     });
 
-    checkboxOnClicks('endUserFilters');
-    checkboxOnClicks('ageRangeFilters');
-    checkboxOnClicks('educationalUseFilters');
-    checkboxOnClicks('interactivityTypeFilters');
-    checkboxOnClicks('learningResourceFilters');
-    checkboxOnClicks('mediaTypeFilters');
+    // Setup all the checkbox onclicks for the various filter groups
+    for (key in filterKeys) {
+        checkboxOnClicks(key)
+    }
 
 });
 
