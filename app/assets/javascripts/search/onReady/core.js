@@ -220,7 +220,7 @@ $(function() {
         updateDisplay();
     });
 
-    $("#publisherFilter").on('keydown', function() {
+    $("#publisherFilter").on('keyup', function() {
         parseSearchResults();
     });
 

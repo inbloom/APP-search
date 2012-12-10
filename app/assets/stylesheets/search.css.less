@@ -132,28 +132,62 @@ div.tag-alignments {
 td.left-column {
   width:260px;
   color:white;
-  background-color:#45aeea !important;
+  background-color:#d6d6d6 !important;
+  border-top: 1px solid #c8c8c8;
+  border-bottom: 1px solid #ddd;
   vertical-align:middle;
   text-align:center;
+}
+td.main-column {
+  background-color:#d6d6d6 !important;
+  border-top: 1px solid #c8c8c8;
+  border-bottom: 1px solid #c8c8c8;
 }
 
 #searchBody {
   margin-bottom: 0;
 }
 #filterFields {
-  color: white;
-  background-color:#8accf2;
+  color: black;
+  background-color:#d6d6d6;
   width: 276px;
   position: relative;
   top: 0;
   left: 0;
   a {
-    color: white;
+    color: black;
+    i {
+      float: right;
+      margin-top: 1px;
+      line-height: 20px !important;
+    }
+  }
+  a.filter {
+    color: black;
+    border-bottom:1px #dddddd solid;
+    display:block;
+    padding-left: 10px;
+    line-height: 30px;
+    &[rel=popovers] {
+      border-left: 0 !important;
+      border-right: 0 !important;
+    }
+    &[rel=popovers]:hover {
+      background-color: #067097 !important;
+    }
+  }
+  span a i {
+    margin-top: 7px;
+    margin-right: 10px;
   }
   div.flyout {
     display: none;
   }
+  li > label {
+    margin-left: 13px;
+  }
 }
+
 #resultsPane {
   position: absolute;
   padding: 10px;
@@ -189,26 +223,6 @@ td.left-column {
   }
 }
 
-a.filter {
-  background-color:#5cb8ed;
-  border-bottom:1px #dddddd solid;
-  display:block;
-  padding-left: 10px;
-  line-height: 30px;
-  i {
-    padding-right: 10px;
-    color: white;
-    float: right;
-    margin-top: 8px;
-  }
-}
-a[rel=popovers] {
-  border-left: 0 !important;
-  border-right: 0 !important;
-}
-a[rel=popovers]:hover {
-  background-color: #f8b93b !important;
-}
 div.popover {
   width: inherit !important;
 }
