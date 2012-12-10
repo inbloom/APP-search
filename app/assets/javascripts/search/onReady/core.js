@@ -399,7 +399,8 @@ function updateDisplay(page) {
     for (i = pagination['offset']; i < (pagination['offset'] + pagination['limit']); i++) {
         if (searchResultsFiltered[i] == undefined) break;
         var r = searchResultsFiltered[i];
-        $("#resultsPane").append($("<div class='result'><p><em><a href='"+r['url']+"' target='_blank'>"+r['title']+"</a></em></p><cite>"+r['url']+"</cite></div>"));
+        var thumbnail = (r['url'] != "") ? 'http://beta.url2png.com/v6/P50C4FEF8F41CC/' + r['url2png_token'] + '/png/?url=' + r['url'] + '&thumbnail_max_width=160' : "";
+        $("#resultsPane").append($("<div class='result'><img class='thumbnail' src='"+thumbnail+"' width='190' height='60' /><p><em><a href='"+r['url']+"' target='_blank'>"+r['title']+"</a></em></p><cite>"+r['url']+"</cite></div>"));
         countShowing++;
     }
 
