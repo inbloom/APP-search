@@ -206,6 +206,8 @@ $(function() {
             return $(this).siblings('div.flyout').html();
         },
         template: '<div class="popover" onmouseover="$(this).mouseleave(function() {$(\'a[rel=popovers]\').popover(\'hide\');});"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>'
+    }).click(function(e) {
+        $("a[rel=popovers]").not(this).popover('hide');
     });
 
     // On button click search
