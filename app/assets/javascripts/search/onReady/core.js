@@ -8,7 +8,8 @@ $(function() {
         'educationalUseFilters'     : [],
         'interactivityTypeFilters'  : [],
         'learningResourceFilters'   : [],
-        'mediaTypeFilters'          : []
+        'mediaTypeFilters'          : [],
+        'groupTypeFilters'          : []
     };
     pagination = {};
 
@@ -174,6 +175,21 @@ $(function() {
             'mT035':'Videodisc',
             'mT036':'Webpage',
             'mT037':'Wiki'
+        },
+        
+        'groupTypeFilters' : {
+            'gT001':'Class',
+            'gT002':'Community',
+            'gT003':'Grade',
+            'gT004':'Group Large (6&plus; members)',
+            'gT005':'Group Small (3-5 members)',
+            'gT006':'Individual',
+            'gT007':'Inter-Generational',
+            'gT008':'Multiple Class',
+            'gT009':'Pair',
+            'gT010':'School',
+            'gT011':'State/Province',
+            'gT012':'World'
         }
 
     };
@@ -381,6 +397,17 @@ function parseSearchResults() {
             }
         }
 
+        // Group Type Filter
+        var groupTypeFound = true;
+        if (searchFilters.groupTypeFilters.length != 0) {
+            groupTypeFound = false;
+            for (a in searchFilters.groupTypeFilters) {
+                if (r['groupType'].match(searchFilters.groupTypeFilters[a])) {
+                    groupTypeFound = true;
+                }
+            }
+        }
+
         // Publisher Filter
         var publisherFilterFound = true;
         var publisherFilter = $("#publisherFilter").val().toLowerCase();
@@ -407,6 +434,7 @@ function parseSearchResults() {
             interactivityTypeFound &&
             learningResourceFound &&
             mediaTypeFound &&
+            groupTypeFound &&
             publisherFilterFound &&
             dotNotationFound) {
                 searchResultsFiltered.push(r);

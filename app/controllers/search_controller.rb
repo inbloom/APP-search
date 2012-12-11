@@ -24,6 +24,7 @@ class SearchController < ApplicationController
               'interactivityType' => Rack::Utils.unescape(r['props']['urn:schema-org:property_type:interactivity_type'].to_s),
               'learningResource'  => Rack::Utils.unescape(r['props']['urn:schema-org:property_type:learning_resource_type'].to_s),
               'mediaType'         => Rack::Utils.unescape(r['props']['urn:schema-org:property_type:physical_media_type'].to_s),
+              'groupType'         => Rack::Utils.unescape(r['props']['urn:schema-org:property_type:group_type'].to_s),
               'publisher'         => Rack::Utils.unescape(r['props']['urn:schema-org:property_type:publisher'].to_s),
               'alignments'        => Rack::Utils.unescape(r['props']['urn:schema-org:property_type:alignment_type'].to_s),
               'url2png_token'     => Digest::MD5.hexdigest("?url="+url+"&thumbnail_max_width=160" + 'S86B90B5E2E4AF')
