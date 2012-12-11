@@ -182,7 +182,7 @@ $(function() {
     // Setup Dot Notation Array
     dotNotationDisplayArray = new Array();
     readAlignmentDataFromFiles();
-    var $dotNotation = $( '#dotNotationInput');
+    var $dotNotation = $( '#dotNotationFilter');
     $dotNotation.typeahead({source: dotNotationDisplayArray, items:8});
 
     // Resize the results pane based on our browser (dumb.. but feh)
@@ -221,6 +221,10 @@ $(function() {
     });
 
     $("#publisherFilter").on('keyup', function() {
+        parseSearchResults();
+    });
+
+    $("#dotNotationFilter").on('keyup', function() {
         parseSearchResults();
     });
 
@@ -387,13 +391,24 @@ function parseSearchResults() {
             }
         }
 
+        // DotNotation Filter
+        var dotNotationFound = true;
+        var dotNotationFilter = $("#dotNotationFilter").val().toLowerCase();
+        if (dotNotationFilter != "") {
+            dotNotationFound = false;
+            if (r['alignments'].toLowerCase().match(dotNotationFilter)) {
+                dotNotationFound = true;
+            }
+        }
+
         if (endUserFound &&
             ageRangeFound &&
             educationalUseFound &&
             interactivityTypeFound &&
             learningResourceFound &&
             mediaTypeFound &&
-            publisherFilterFound) {
+            publisherFilterFound &&
+            dotNotationFound) {
                 searchResultsFiltered.push(r);
         }
     }
@@ -436,7 +451,4 @@ function updateDisplay(page) {
     } else {
         $("#resultsPane").append("<h5>It appears your search returned no results.</h5>");
     }
-
-
-
 }
