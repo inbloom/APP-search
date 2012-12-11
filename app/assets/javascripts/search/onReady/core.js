@@ -8,7 +8,8 @@ $(function() {
         'educationalUseFilters'     : [],
         'interactivityTypeFilters'  : [],
         'learningResourceFilters'   : [],
-        'mediaTypeFilters'          : []
+        'mediaTypeFilters'          : [],
+        'groupTypeFilters'          : []
     };
     pagination = {};
 
@@ -174,6 +175,21 @@ $(function() {
             'mT035':'Videodisc',
             'mT036':'Webpage',
             'mT037':'Wiki'
+        },
+        
+        'groupTypeFilters' : {
+            'gT001':'Class',
+            'gT002':'Community',
+            'gT003':'Grade',
+            'gT004':'Group Large (6&plus; members)',
+            'gT005':'Group Small (3-5 members)',
+            'gT006':'Individual',
+            'gT007':'Inter-Generational',
+            'gT008':'Multiple Class',
+            'gT009':'Pair',
+            'gT010':'School',
+            'gT011':'State/Province',
+            'gT012':'World'
         }
 
     };
@@ -182,7 +198,7 @@ $(function() {
     // Setup Dot Notation Array
     dotNotationDisplayArray = new Array();
     readAlignmentDataFromFiles();
-    var $dotNotation = $( '#dotNotationInput');
+    var $dotNotation = $( '#dotNotationFilter');
     $dotNotation.typeahead({source: dotNotationDisplayArray, items:8});
 
     // Resize the results pane based on our browser (dumb.. but feh)
@@ -221,6 +237,10 @@ $(function() {
     });
 
     $("#publisherFilter").on('keyup', function() {
+        parseSearchResults();
+    });
+
+    $("#dotNotationFilter").on('keyup', function() {
         parseSearchResults();
     });
 
@@ -377,6 +397,17 @@ function parseSearchResults() {
             }
         }
 
+        // Group Type Filter
+        var groupTypeFound = true;
+        if (searchFilters.groupTypeFilters.length != 0) {
+            groupTypeFound = false;
+            for (a in searchFilters.groupTypeFilters) {
+                if (r['groupType'].match(searchFilters.groupTypeFilters[a])) {
+                    groupTypeFound = true;
+                }
+            }
+        }
+
         // Publisher Filter
         var publisherFilterFound = true;
         var publisherFilter = $("#publisherFilter").val().toLowerCase();
@@ -387,13 +418,25 @@ function parseSearchResults() {
             }
         }
 
+        // DotNotation Filter
+        var dotNotationFound = true;
+        var dotNotationFilter = $("#dotNotationFilter").val().toLowerCase();
+        if (dotNotationFilter != "") {
+            dotNotationFound = false;
+            if (r['alignments'].toLowerCase().match(dotNotationFilter)) {
+                dotNotationFound = true;
+            }
+        }
+
         if (endUserFound &&
             ageRangeFound &&
             educationalUseFound &&
             interactivityTypeFound &&
             learningResourceFound &&
             mediaTypeFound &&
-            publisherFilterFound) {
+            groupTypeFound &&
+            publisherFilterFound &&
+            dotNotationFound) {
                 searchResultsFiltered.push(r);
         }
     }
@@ -436,7 +479,4 @@ function updateDisplay(page) {
     } else {
         $("#resultsPane").append("<h5>It appears your search returned no results.</h5>");
     }
-
-
-
 }
