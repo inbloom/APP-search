@@ -10,8 +10,12 @@ module LriHelper
 
     # The following is a list of deleted keys we are removing for the time being
     deleted_keys = [
-        'groupType', # The property "groupType" does not appear to exist in the LRMI or schema.org specs.
-        'educationalAlignments' # TODO Need the CCSS stuff injected before I can use this..
+        'id', # Don't delete this!
+    ]
+
+    # Don't Escape the values of these keys
+    dont_escape_keys = [
+        'educationalAlignments'
     ]
 
     # Alignments array for storing the alignments that are removed from the tag
@@ -24,7 +28,7 @@ module LriHelper
 
       # Which incoming keys do we need to url encode the values of?
       tag.each do |k,v|
-        tag[k] = Rack::Utils.escape v
+        tag[k] = (dont_escape_keys.include?(k)) ? v : Rack::Utils.escape(v)
       end
 
       # Adjust or insert stuff prior to remapping
@@ -35,7 +39,7 @@ module LriHelper
       # Store the alignments in the alignments array to be added later.
       #      alignments_array << tag['educationalAlignments']
       # Change alignments hash to array of id's in the LRI to make association
-      #      tag['educationalAlignments'] = tag['educationalAlignments'].map{|k,v| "urn:lrmi:alignment_object:" + k }
+      #      tag['educationalAlignments'] = tag['educationalAlignments'].map{|k,v| "urn:lrmi:alignment_object:" + v['dotNotation'] }
 
       # TODO If the key is in the deleted keys list above, delete it..
       # TODO NOTE: this is temporary until I figure out how to get all those keys working. (ADDENDUM Kurt has to add them)
@@ -55,8 +59,10 @@ module LriHelper
       search = self.find(request[remap_key('uuid')])
       if search
         if search['response'].present?
+puts '.'
           self.update request, search['response'].first
         else
+puts '+'
           self.create request
         end
       end
@@ -67,13 +73,11 @@ module LriHelper
     @@failures
   end
 
-
   def self.wildcard_search query
     query = ".*" + Rack::Utils.escape(query) + ".*"
     request = {"urn:lri:property_type:name" => query, "limit" => '100'}
     self.request :quickSearch, request
   end
-
 
   private
 
@@ -99,7 +103,8 @@ module LriHelper
         'timeRequired'          => 'urn:schema-org:property_type:time_required',
         'createdBy'             => 'urn:schema-org:property_type:author',
         'educationalAlignments' => 'urn:schema-org:property_type:educational_alignment',
-        'mediaType'             => 'urn:schema-org:property_type:physical_media_type'
+        'mediaType'             => 'urn:schema-org:property_type:physical_media_type',
+        'groupType'             => 'urn:schema-org:property_type:group_type'
     }
     return lri_key_mappings[key] if lri_key_mappings[key].present?
     key
@@ -210,11 +215,12 @@ module LriHelper
         )
     )
 
-# This is here to test changes made by kurt.. it gives us an idea of what we are trying to do and what happened.
+#if type == :getEnumerations
 #puts :REQUEST.to_s + "::" + type.to_s
 #puts 'http://lriserver.com:8200' + requestTypes[type] + request.to_json
 #puts :RESPONSE
 #puts rawResponse
+#end
 
 # Parse out the response
     results = ActiveSupport::JSON.decode(rawResponse)
