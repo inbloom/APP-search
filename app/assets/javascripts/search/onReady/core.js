@@ -199,7 +199,6 @@ $(function() {
     dotNotationDisplayArray = new Array();
     readAlignmentDataFromFiles();
     var $dotNotation = $( '#dotNotationFilter');
-console.log(dotNotationDisplayArray);
     $dotNotation.typeahead({
         source : dotNotationDisplayArray,
         items  : 8
