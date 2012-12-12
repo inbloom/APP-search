@@ -475,8 +475,10 @@ function updateDisplay(page) {
     }
 
     if (searchResultsFiltered.length >= 1) {
+        $("span.showing-text").show();
         $("span.showing-text").html("Showing " + (pagination['offset'] + 1) + " to " + (pagination['offset'] + countShowing) + " of " + searchResultsFiltered.length + " Results");
     } else {
+        $("span.showing-text").hide();
         $("#resultsPane").append("<h5>It appears your search returned no results.</h5>");
     }
 }
