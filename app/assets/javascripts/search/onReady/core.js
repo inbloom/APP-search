@@ -199,7 +199,11 @@ $(function() {
     dotNotationDisplayArray = new Array();
     readAlignmentDataFromFiles();
     var $dotNotation = $( '#dotNotationFilter');
-    $dotNotation.typeahead({source: dotNotationDisplayArray, items:8});
+console.log(dotNotationDisplayArray);
+    $dotNotation.typeahead({
+        source : dotNotationDisplayArray,
+        items  : 8
+    });
 
     // Resize the results pane based on our browser (dumb.. but feh)
     $("#resultsPane").css({

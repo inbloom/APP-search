@@ -1,9 +1,7 @@
 function processDataForAlignmentArray(allText)	{
-    var reader = new FileReader();
-    reader.readAsText(allText);
-    var output = $.csv2Array(allText);
-    for (var i = 1; i < output.length-1; i++)
-    {
-        dotNotationDisplayArray.push(output[i][2]);
+    var lines = allText.split(/\n|\r/);
+    for (var i = 1; i < lines.length -1 ; i++) {
+        var split = lines[i].split(',');
+        dotNotationDisplayArray.push(split[2]);
     }
 }
