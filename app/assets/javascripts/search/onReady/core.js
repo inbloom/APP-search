@@ -341,7 +341,7 @@ function performSearch() {
         type : "POST",
         dataType : 'json',
         url  : "/search/full_search",
-        data : { query : query, filters : checkboxes },
+        data : { query : query, filters : checkboxes, targetName : notation, publisher : publisher },
         success : function(xhr) {
             searchResults = xhr
             parseSearchResults();
