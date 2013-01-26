@@ -117,6 +117,8 @@ GEM
     rake (10.0.3)
     rdoc (3.12)
       json (~> 1.4)
+    rest-client (1.6.7)
+      mime-types (>= 1.16)
     sass (3.2.5)
     sass-rails (3.2.5)
       railties (~> 3.2.0)
@@ -162,6 +164,7 @@ DEPENDENCIES
   omniauth
   omniauth-slc (= 0.0.2)
   rails (= 3.2.11)
+  rest-client
   sass-rails (~> 3.2.3)
   therubyracer (~> 0.10.2)
   thin

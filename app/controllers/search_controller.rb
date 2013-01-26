@@ -16,9 +16,28 @@
 
 class SearchController < ApplicationController
 
+  def full_search
+
+    url = 'http://esearch.agilix.com:9200/lr/lr/_search'
+
+    puts "params"
+    puts params
+
+
+    payload = '{"query":{"match":{"targetName":"CCSS.Math.Content.6.EE.A.3"}}}'
+
+    searchResults = RestClient::Request.new( :method => :get, :url => url, :payload => payload ).execute
+
+    respond_to do |format|
+      format.json { render json: searchResults }
+    end
+
+  end
+
+
   # This initial search method just does the raw keyword search and returns the ENTIRE results.
   # All filtering is done on the client side..  This is ONLY for 12/12 release as it will not scale.
-  def full_search
+  def lri_search
     # The object we return to the UI, if any
     response = []
     # Get our query
