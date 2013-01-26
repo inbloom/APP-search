@@ -310,13 +310,16 @@ function unCheck(id) {
 // Update search filters
 function updateFilters() {
     // Iterate through all the known search filters, find the checkbox list for them and then filter based on those
-    for (key in searchFilters) {
-        searchFilters[key] = [];
-        $("div.flyout div." + key + " input[type=checkbox][checked=checked]").each(function() {
-            searchFilters[key].push(filterKeys[key][$(this).val()]);
-        });
-    }
-    parseSearchResults();
+// @TODO DELETE THIS
+//    for (key in searchFilters) {
+//        searchFilters[key] = [];
+//        $("div.flyout div." + key + " input[type=checkbox][checked=checked]").each(function() {
+//            searchFilters[key].push(filterKeys[key][$(this).val()]);
+//        });
+//    }
+//    parseSearchResults();
+    performSearch();
+
 }
 
 
@@ -326,11 +329,19 @@ function performSearch() {
     $("#resultsPane").append($("<h5>Searching...</h5>"));
 
     var query = $('#searchInput').val();
+    var publisher = $('#publisherFilter').val();
+    var notation = $('#dotNotationFilter').val();
+
+    var checkboxes = {};
+    $('div.items input[type=checkbox][checked]').each(function(e,obj) {
+        checkboxes[obj.name] = true;
+    });
+
     $.ajax({
         type : "POST",
         dataType : 'json',
         url  : "/search/full_search",
-        data : { query : query },
+        data : { query : query, filters : checkboxes },
         success : function(xhr) {
             searchResults = xhr
             parseSearchResults();
@@ -345,120 +356,120 @@ function parseSearchResults() {
     searchResultsFiltered = [];
     $("#resultsPane").empty();
 
-    for (i in searchResults) {
-        var r = searchResults[i];
-
-        // TODO Refactor this so it's dry..
-
-        // End User Filter
-        var endUserFound = true;
-        if (searchFilters.endUserFilters.length != 0) {
-            endUserFound = false;
-            for (a in searchFilters.endUserFilters) {
-                if (r['endUser'].match(searchFilters.endUserFilters[a])) {
-                    endUserFound = true;
-                }
-            }
-        }
-
-        // Age Range Filter
-        var ageRangeFound = true;
-        if (searchFilters.ageRangeFilters.length != 0) {
-            ageRangeFound = false;
-            for (a in searchFilters.ageRangeFilters) {
-                if (r['ageRange'].match(searchFilters.ageRangeFilters[a])) {
-                    ageRangeFound = true;
-                }
-            }
-        }
-
-        // Educational Use Filter
-        var educationalUseFound = true;
-        if (searchFilters.educationalUseFilters.length != 0) {
-            educationalUseFound = false;
-            for (a in searchFilters.educationalUseFilters) {
-                if (r['educationalUse'].match(searchFilters.educationalUseFilters[a])) {
-                    educationalUseFound = true;
-                }
-            }
-        }
-
-        // Interactivity Type Filter
-        var interactivityTypeFound = true;
-        if (searchFilters.interactivityTypeFilters.length != 0) {
-            interactivityTypeFound = false;
-            for (a in searchFilters.interactivityTypeFilters) {
-                if (r['interactivityType'].match(searchFilters.interactivityTypeFilters[a])) {
-                    interactivityTypeFound = true;
-                }
-            }
-        }
-
-        // Interactivity Type Filter
-        var learningResourceFound = true;
-        if (searchFilters.learningResourceFilters.length != 0) {
-            learningResourceFound = false;
-            for (a in searchFilters.learningResourceFilters) {
-                if (r['learningResource'].match(searchFilters.learningResourceFilters[a])) {
-                    learningResourceFound = true;
-                }
-            }
-        }
-
-        // Media Type Filter
-        var mediaTypeFound = true;
-        if (searchFilters.mediaTypeFilters.length != 0) {
-            mediaTypeFound = false;
-            for (a in searchFilters.mediaTypeFilters) {
-                if (r['mediaType'].match(searchFilters.mediaTypeFilters[a])) {
-                    mediaTypeFound = true;
-                }
-            }
-        }
-
-        // Group Type Filter
-        var groupTypeFound = true;
-        if (searchFilters.groupTypeFilters.length != 0) {
-            groupTypeFound = false;
-            for (a in searchFilters.groupTypeFilters) {
-                if (r['groupType'].match(searchFilters.groupTypeFilters[a])) {
-                    groupTypeFound = true;
-                }
-            }
-        }
-
-        // Publisher Filter
-        var publisherFilterFound = true;
-        var publisherFilter = $("#publisherFilter").val().toLowerCase();
-        if (publisherFilter != "") {
-            publisherFilterFound = false;
-            if (r['publisher'].toLowerCase().match(publisherFilter)) {
-                publisherFilterFound = true;
-            }
-        }
-
-        // DotNotation Filter
-        var dotNotationFound = true;
-        var dotNotationFilter = $("#dotNotationFilter").val().toLowerCase();
-        if (dotNotationFilter != "") {
-            dotNotationFound = false;
-            if (r['alignments'].toLowerCase().match(dotNotationFilter)) {
-                dotNotationFound = true;
-            }
-        }
-
-        if (endUserFound &&
-            ageRangeFound &&
-            educationalUseFound &&
-            interactivityTypeFound &&
-            learningResourceFound &&
-            mediaTypeFound &&
-            groupTypeFound &&
-            publisherFilterFound &&
-            dotNotationFound) {
-                searchResultsFiltered.push(r);
-        }
-    }
+//    for (i in searchResults) {
+//        var r = searchResults[i];
+//
+//        // TODO Refactor this so it's dry..
+//
+//        // End User Filter
+//        var endUserFound = true;
+//        if (searchFilters.endUserFilters.length != 0) {
+//            endUserFound = false;
+//            for (a in searchFilters.endUserFilters) {
+//                if (r['endUser'].match(searchFilters.endUserFilters[a])) {
+//                    endUserFound = true;
+//                }
+//            }
+//        }
+//
+//        // Age Range Filter
+//        var ageRangeFound = true;
+//        if (searchFilters.ageRangeFilters.length != 0) {
+//            ageRangeFound = false;
+//            for (a in searchFilters.ageRangeFilters) {
+//                if (r['ageRange'].match(searchFilters.ageRangeFilters[a])) {
+//                    ageRangeFound = true;
+//                }
+//            }
+//        }
+//
+//        // Educational Use Filter
+//        var educationalUseFound = true;
+//        if (searchFilters.educationalUseFilters.length != 0) {
+//            educationalUseFound = false;
+//            for (a in searchFilters.educationalUseFilters) {
+//                if (r['educationalUse'].match(searchFilters.educationalUseFilters[a])) {
+//                    educationalUseFound = true;
+//                }
+//            }
+//        }
+//
+//        // Interactivity Type Filter
+//        var interactivityTypeFound = true;
+//        if (searchFilters.interactivityTypeFilters.length != 0) {
+//            interactivityTypeFound = false;
+//            for (a in searchFilters.interactivityTypeFilters) {
+//                if (r['interactivityType'].match(searchFilters.interactivityTypeFilters[a])) {
+//                    interactivityTypeFound = true;
+//                }
+//            }
+//        }
+//
+//        // Interactivity Type Filter
+//        var learningResourceFound = true;
+//        if (searchFilters.learningResourceFilters.length != 0) {
+//            learningResourceFound = false;
+//            for (a in searchFilters.learningResourceFilters) {
+//                if (r['learningResource'].match(searchFilters.learningResourceFilters[a])) {
+//                    learningResourceFound = true;
+//                }
+//            }
+//        }
+//
+//        // Media Type Filter
+//        var mediaTypeFound = true;
+//        if (searchFilters.mediaTypeFilters.length != 0) {
+//            mediaTypeFound = false;
+//            for (a in searchFilters.mediaTypeFilters) {
+//                if (r['mediaType'].match(searchFilters.mediaTypeFilters[a])) {
+//                    mediaTypeFound = true;
+//                }
+//            }
+//        }
+//
+//        // Group Type Filter
+//        var groupTypeFound = true;
+//        if (searchFilters.groupTypeFilters.length != 0) {
+//            groupTypeFound = false;
+//            for (a in searchFilters.groupTypeFilters) {
+//                if (r['groupType'].match(searchFilters.groupTypeFilters[a])) {
+//                    groupTypeFound = true;
+//                }
+//            }
+//        }
+//
+//        // Publisher Filter
+//        var publisherFilterFound = true;
+//        var publisherFilter = $("#publisherFilter").val().toLowerCase();
+//        if (publisherFilter != "") {
+//            publisherFilterFound = false;
+//            if (r['publisher'].toLowerCase().match(publisherFilter)) {
+//                publisherFilterFound = true;
+//            }
+//        }
+//
+//        // DotNotation Filter
+//        var dotNotationFound = true;
+//        var dotNotationFilter = $("#dotNotationFilter").val().toLowerCase();
+//        if (dotNotationFilter != "") {
+//            dotNotationFound = false;
+//            if (r['alignments'].toLowerCase().match(dotNotationFilter)) {
+//                dotNotationFound = true;
+//            }
+//        }
+//
+//        if (endUserFound &&
+//            ageRangeFound &&
+//            educationalUseFound &&
+//            interactivityTypeFound &&
+//            learningResourceFound &&
+//            mediaTypeFound &&
+//            groupTypeFound &&
+//            publisherFilterFound &&
+//            dotNotationFound) {
+//                searchResultsFiltered.push(r);
+//        }
+//    }
     // Okay now that we have our filtered results
     updateDisplay();
 }
