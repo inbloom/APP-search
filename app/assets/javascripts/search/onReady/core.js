@@ -327,12 +327,12 @@ function performSearch() {
 
     var publisher = $('#publisherFilter').val();
     if (publisher != '') {
-        filters['publisher['+publisher+']'] = true;
+        filters['properties.publisher.properties.name['+publisher+']'] = true;
     }
 
     var notation = $('#dotNotationFilter').val();
     if (notation != '') {
-        filters['targetName['+notation+ ']'] = true;
+        filters['properties.educationalAlignment.properties.targetName['+notation+ ']'] = true;
     }
 
     $.ajax({
@@ -394,7 +394,8 @@ function parseSearchResults() {
     // Apply the showing text
     if (searchResults.hits.total >= 1) {
         $("span.showing-text").show();
-        $("span.showing-text").html("Showing " + (pagination['offset'] + 1) + " to " + (pagination['offset'] + pagination['limit'] + 0) + " of " + searchResults.hits.total + " Results");
+        var toShowing = ((pagination['offset'] + pagination['limit']) < searchResults.hits.total) ? (pagination['offset'] + pagination['limit']) : searchResults.hits.total;
+        $("span.showing-text").html("Showing " + (pagination['offset'] + 1) + " to " + toShowing + " of " + searchResults.hits.total + " Results");
     } else {
         $("span.showing-text").hide();
         $("#resultsPane").append("<h5>It appears your search returned no results.</h5>");
