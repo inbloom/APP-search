@@ -16,16 +16,22 @@
 
 class SearchController < ApplicationController
 
+  # The Full Search function issues restful search requests to our ElasticSearch engine.
+  # It's likely not perfect, and this is the first time I have used ES so forgive me if
+  #  this is the wrong way to do this.
+  # The bulk of the code below just forms the json query payload.  You can uncomment some
+  #  of the commented out PUTS below to see the output in webrick and make sure it's right.
+  # Comments, suggestions and feedback is welcome; Jason Ellis <jason.ellis@yahoo.com>
   def full_search
+    # Search Engine - @TODO should put this in the config
+    url = 'http://esearch.agilix.com:9200/lr/lr/_search'
+
     # define the elasticsearch result "size" (limit)
     limit = params['limit']
     # define the elasticsearch result "from" (offset)
     offset = params['offset']
     # Default output
     searchResults = ''
-    # Search Engine (should put this in the config)
-    url = 'http://esearch.agilix.com:9200/lr/lr/_search'
-
     # If we have filters, we need to parse them
     if params['filters'].present?
 
@@ -34,7 +40,11 @@ class SearchController < ApplicationController
       params['filters'].each do |key, filter|
         if filter.keys.count > 1
           # This is more complex because this filter type needs the keys or'd together
-          # @TODO Handle the or'ing of multiple filters together
+          orFilters = []
+          filter.keys.each do |f|
+            orFilters << { 'query' => { 'match' => { key => f.to_s } } }
+          end
+          filters << { 'or' => [ orFilters ] }
         else
           # This should be simple, there is only one of this filter key
           filters << { 'query' => { 'match' => { key => filter.keys.first.to_s } } }
@@ -47,7 +57,7 @@ class SearchController < ApplicationController
         filter = { 'limit' => { 'value' => 100 }, 'and' => filters }
       # If no query is present then we can wildcard against anything
       else
-        query = { 'wildcard' => { '_all' => '?' } }
+        query = { 'match' => { '_all' => '?' } }
         filter = { 'limit' => { 'value' => 100 }, 'and' => filters }
       end
 
@@ -69,7 +79,7 @@ class SearchController < ApplicationController
         }
     }
 
-    # puts "PAYLOAD"; puts payload.to_json
+#puts "PAYLOAD"; puts payload.to_json
 
     # Okay after all that mess, lets make the request
     request = RestClient::Request.new( :method => :get, :url => url, :payload => payload.to_json )
@@ -80,13 +90,13 @@ class SearchController < ApplicationController
       respond_to do |format|
         format.json { render json: searchResults }
       end
-      #puts "RESPONSE"; puts searchResults
+#puts "RESPONSE"; puts searchResults
     rescue => e
       # @TODO Need to return the correct error type and then an error message to be shown to user.
       respond_to do |format|
         format.json { render json: searchResults }
       end
-      #puts "ERROR!"; puts e.response
+#puts "ERROR!"; puts e.response
     end
 
   end
