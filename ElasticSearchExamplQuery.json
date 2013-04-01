@@ -1,0 +1,29 @@
+/* Example search query body */
+
+{
+   "query":{
+      "filtered":{
+         "query":{
+            "match":{
+               "_all":"exponent"
+            }
+         },
+         "filter":{
+            "and":[
+               {
+                  "term":{
+                     "targetName":"CCSS.Math.Content.6.EE.A.3"
+                  }
+               },
+               {
+                  "query":{
+                     "match":{
+                        "learningResourceType":"video"
+                     }
+                  }
+               }
+            ]
+         }
+      }
+   }
+}

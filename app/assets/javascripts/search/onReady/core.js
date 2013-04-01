@@ -1,17 +1,30 @@
+/*
+ * Copyright 2012-2013 inBloom, Inc. and its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 $(function() {
 
     searchResults = [];
-    searchResultsFiltered = [];
-    searchFilters = {
-        'endUserFilters'            : [],
-        'ageRangeFilters'           : [],
-        'educationalUseFilters'     : [],
-        'interactivityTypeFilters'  : [],
-        'learningResourceFilters'   : [],
-        'mediaTypeFilters'          : [],
-        'groupTypeFilters'          : []
+
+    pagination = {
+        'offset'    : 0,
+        'limit'     : parseInt($("#paginationLimit").val()),
+        'page'      : 0,
+        'pages'     : 0,
+        'number_of_buttons' : 5
     };
-    pagination = {};
 
     filterKeys = {
         
@@ -194,7 +207,6 @@ $(function() {
 
     };
 
-
     // Setup Dot Notation Array
     dotNotationDisplayArray = new Array();
     readAlignmentDataFromFiles();
@@ -231,35 +243,43 @@ $(function() {
 
     // On button click search
     $("#searchButton").on('click', function() {
+        resetPagination();
         performSearch();
     });
 
     $("#paginationLimit").on('change', function() {
-        pagination['page'] = 1;
-        updateDisplay();
+        pagination['limit'] = parseInt($("#paginationLimit").val());
+        resetPagination();
+        performSearch();
     });
 
-    $("#publisherFilter").on('keyup', function() {
-        parseSearchResults();
+    $("#publisherFilter").on('change', function() {
+        resetPagination();
+        performSearch();
     });
 
-    $("#dotNotationFilter").on('keyup', function() {
-        parseSearchResults();
+    $("#dotNotationFilter").on('change', function() {
+        resetPagination();
+        performSearch();
     });
 
     // On Enter search
     $("#searchInput").on('keydown', function(e) {
         if (e.keyCode == 13) {
+            resetPagination();
             performSearch();
         }
     });
 
     // On click of the pagination buttons do that thing.
-    $(".paginationPageButtons li a").live("click", function() {
-        var page = $(this).attr('href').substr(1);
-        updateDisplay(page);
+    $(".paginationPageButtons li a[rel=pagination]").live("click", function() {
+        var page = parseInt($(this).attr('href').substr(1));
+        pagination['offset'] = pagination['limit'] * (page -1);
+        performSearch();
         return false;
     });
+
+
 
     // Setup all the checkbox onclicks for the various filter groups
     for (key in filterKeys) {
@@ -280,7 +300,8 @@ function checkboxOnClicks(id) {
             $("input[type=checkbox][value="+$(this).val()+"]").removeAttr('checked');
             $("a."+$(this).val()).remove();
         }
-        updateFilters();
+        resetPagination();
+        performSearch();
     });
 }
 
@@ -288,21 +309,9 @@ function checkboxOnClicks(id) {
 function unCheck(id) {
     $("input[type=checkbox][value="+id+"]").removeAttr('checked');
     $("a."+id).remove();
-    updateFilters();
+    resetPagination();
+    performSearch();
 }
-
-// Update search filters
-function updateFilters() {
-    // Iterate through all the known search filters, find the checkbox list for them and then filter based on those
-    for (key in searchFilters) {
-        searchFilters[key] = [];
-        $("div.flyout div." + key + " input[type=checkbox][checked=checked]").each(function() {
-            searchFilters[key].push(filterKeys[key][$(this).val()]);
-        });
-    }
-    parseSearchResults();
-}
-
 
 // Fires the search
 function performSearch() {
@@ -310,178 +319,92 @@ function performSearch() {
     $("#resultsPane").append($("<h5>Searching...</h5>"));
 
     var query = $('#searchInput').val();
+
+    var filters = {};
+    $('div.items input[type=checkbox][checked]').each(function(e,obj) {
+        filters[obj.name] = true;
+    });
+
+    var publisher = $('#publisherFilter').val();
+    if (publisher != '') {
+        filters['properties.publisher.properties.name['+publisher+']'] = true;
+    }
+
+    var notation = $('#dotNotationFilter').val();
+    if (notation != '') {
+        filters['properties.educationalAlignment.properties.targetName['+notation+ ']'] = true;
+    }
+
     $.ajax({
         type : "POST",
         dataType : 'json',
         url  : "/search/full_search",
-        data : { query : query },
+        data : { query : query, filters : filters, limit : pagination['limit'], offset : pagination['offset'] },
         success : function(xhr) {
             searchResults = xhr
             parseSearchResults();
         },
         error : function(xhr, txtStatus, errThrown) {
+            // @TODO need to add code to do something with errors
         }
     });
 }
 
 // Parse out the results
 function parseSearchResults() {
-    searchResultsFiltered = [];
+
+    pagination['page'] = (pagination['offset'] / pagination['limit']) + 1 || 1;
+    pagination['pages'] = Math.ceil(searchResults.hits.total / pagination['limit']);
+
     $("#resultsPane").empty();
 
-    for (i in searchResults) {
-        var r = searchResults[i];
+    // Draw each of the search result hits to the page
+    if (searchResults.hits.hits != undefined && searchResults.hits.hits.length > 0 ) {
+        for(item in searchResults.hits.hits) {
 
-        // TODO Refactor this so it's dry..
+            var props = searchResults.hits.hits[item]['_source'].properties;
+            var item_thumb = (props.thumbnailUrl != undefined) ? props.thumbnailUrl[0] : '';
+            var item_url = (props.url != undefined) ? props.url[0] : '';
+            var item_name  = (props.name != undefined) ? props.name[0] : '';
 
-        // End User Filter
-        var endUserFound = true;
-        if (searchFilters.endUserFilters.length != 0) {
-            endUserFound = false;
-            for (a in searchFilters.endUserFilters) {
-                if (r['endUser'].match(searchFilters.endUserFilters[a])) {
-                    endUserFound = true;
-                }
-            }
+            $("#resultsPane").append($("<div class='result'><img class='thumbnail' src='"+item_thumb+"' width='190' height='60' /><p><em><a href='"+item_url+"' target='_blank'>"+item_name+"</a></em></p><cite>"+item_url+"</cite></div>"));
+
         }
-
-        // Age Range Filter
-        var ageRangeFound = true;
-        if (searchFilters.ageRangeFilters.length != 0) {
-            ageRangeFound = false;
-            for (a in searchFilters.ageRangeFilters) {
-                if (r['ageRange'].match(searchFilters.ageRangeFilters[a])) {
-                    ageRangeFound = true;
-                }
-            }
-        }
-
-        // Educational Use Filter
-        var educationalUseFound = true;
-        if (searchFilters.educationalUseFilters.length != 0) {
-            educationalUseFound = false;
-            for (a in searchFilters.educationalUseFilters) {
-                if (r['educationalUse'].match(searchFilters.educationalUseFilters[a])) {
-                    educationalUseFound = true;
-                }
-            }
-        }
-
-        // Interactivity Type Filter
-        var interactivityTypeFound = true;
-        if (searchFilters.interactivityTypeFilters.length != 0) {
-            interactivityTypeFound = false;
-            for (a in searchFilters.interactivityTypeFilters) {
-                if (r['interactivityType'].match(searchFilters.interactivityTypeFilters[a])) {
-                    interactivityTypeFound = true;
-                }
-            }
-        }
-
-        // Interactivity Type Filter
-        var learningResourceFound = true;
-        if (searchFilters.learningResourceFilters.length != 0) {
-            learningResourceFound = false;
-            for (a in searchFilters.learningResourceFilters) {
-                if (r['learningResource'].match(searchFilters.learningResourceFilters[a])) {
-                    learningResourceFound = true;
-                }
-            }
-        }
-
-        // Media Type Filter
-        var mediaTypeFound = true;
-        if (searchFilters.mediaTypeFilters.length != 0) {
-            mediaTypeFound = false;
-            for (a in searchFilters.mediaTypeFilters) {
-                if (r['mediaType'].match(searchFilters.mediaTypeFilters[a])) {
-                    mediaTypeFound = true;
-                }
-            }
-        }
-
-        // Group Type Filter
-        var groupTypeFound = true;
-        if (searchFilters.groupTypeFilters.length != 0) {
-            groupTypeFound = false;
-            for (a in searchFilters.groupTypeFilters) {
-                if (r['groupType'].match(searchFilters.groupTypeFilters[a])) {
-                    groupTypeFound = true;
-                }
-            }
-        }
-
-        // Publisher Filter
-        var publisherFilterFound = true;
-        var publisherFilter = $("#publisherFilter").val().toLowerCase();
-        if (publisherFilter != "") {
-            publisherFilterFound = false;
-            if (r['publisher'].toLowerCase().match(publisherFilter)) {
-                publisherFilterFound = true;
-            }
-        }
-
-        // DotNotation Filter
-        var dotNotationFound = true;
-        var dotNotationFilter = $("#dotNotationFilter").val().toLowerCase();
-        if (dotNotationFilter != "") {
-            dotNotationFound = false;
-            if (r['alignments'].toLowerCase().match(dotNotationFilter)) {
-                dotNotationFound = true;
-            }
-        }
-
-        if (endUserFound &&
-            ageRangeFound &&
-            educationalUseFound &&
-            interactivityTypeFound &&
-            learningResourceFound &&
-            mediaTypeFound &&
-            groupTypeFound &&
-            publisherFilterFound &&
-            dotNotationFound) {
-                searchResultsFiltered.push(r);
-        }
-    }
-    // Okay now that we have our filtered results
-    updateDisplay();
-}
-
-// Step through the filtered search results and use them
-function updateDisplay(page) {
-    // Define our pagination
-    pagination['page'] = parseInt(page) || pagination['page'] || 1;
-    pagination['limit'] = parseInt($('#paginationLimit').val());
-    pagination['pages'] = Math.ceil(searchResultsFiltered.length / pagination['limit']);
-    pagination['offset'] = (pagination['limit'] * pagination['page']) - pagination['limit'];
-    // scrub the results
-    $("#resultsPane").empty();
-
-    // Draw the number of items in our filter that our pagination limit allows
-    var countShowing = 0;
-    for (i = pagination['offset']; i < (pagination['offset'] + pagination['limit']); i++) {
-        if (searchResultsFiltered[i] == undefined) break;
-        var r = searchResultsFiltered[i];
-        var thumbnail = (r['url'] != "") ? 'http://beta.url2png.com/v6/P50C4FEF8F41CC/' + r['url2png_token'] + '/png/?url=' + r['url'] + '&thumbnail_max_width=160' : "";
-        $("#resultsPane").append($("<div class='result'><img class='thumbnail' src='"+thumbnail+"' width='190' height='60' /><p><em><a href='"+r['url']+"' target='_blank'>"+r['title']+"</a></em></p><cite>"+r['url']+"</cite></div>"));
-        countShowing++;
     }
 
     // Inject the pagination buttons
+
     if (pagination['pages'] > 1) {
         $("#resultsPane").append($('<div class="pagination pull-right"><ul class="paginationPageButtons"></ul></div>'));
-        $(".paginationPageButtons").append($('<li class="'+((pagination['page']==1)?"disabled":"")+'"><a href="#'+1+'"> &lt;&lt; </a></li>'));
-        for (i = 1; i <= pagination['pages']; i++) {
-            $(".paginationPageButtons").append($("<li class='"+((i==pagination['page'])?'active':'')+"'><a href='#"+i+"'>"+i+"</a></li>"));
+        $(".paginationPageButtons").append($('<li class="'+((pagination['page']==1)?"disabled":"")+'"><a rel="pagination" href="#'+1+'"> &lt;&lt; </a></li>'));
+        if ((pagination['page'] - pagination['number_of_buttons'] > 1)) {
+            $(".paginationPageButtons").append($('<li><a rel="pagination" href="#1">1 ...</a></li>'));
         }
-        $(".paginationPageButtons").append($('<li class="'+((pagination['page']==pagination['pages'])?'disabled':'')+'"><a href="#'+pagination['pages']+'"> &gt;&gt; </a></li>'));
+        for (i = 1; i <= pagination['pages']; i++) {
+            if ((i + pagination['number_of_buttons']) > pagination['page'] && (i - pagination['number_of_buttons']) < pagination['page']) {
+                $(".paginationPageButtons").append($("<li class='"+((i==pagination['page'])?'active':'')+"'><a rel='pagination' href='#"+i+"'>"+i+"</a></li>"));
+            }
+        }
+        if ((pagination['page'] + pagination['number_of_buttons']) < pagination['pages']) {
+            $(".paginationPageButtons").append($('<li><a rel="pagination" href="#'+pagination['pages']+'">... '+pagination['pages']+'</a></li>'));
+        }
+        $(".paginationPageButtons").append($('<li class="'+((pagination['page']==pagination['pages'])?'disabled':'')+'"><a rel="pagination" href="#'+pagination['pages']+'"> &gt;&gt; </a></li>'));
     }
 
-    if (searchResultsFiltered.length >= 1) {
+    // Apply the showing text
+    if (searchResults.hits.total >= 1) {
         $("span.showing-text").show();
-        $("span.showing-text").html("Showing " + (pagination['offset'] + 1) + " to " + (pagination['offset'] + countShowing) + " of " + searchResultsFiltered.length + " Results");
+        var toShowing = ((pagination['offset'] + pagination['limit']) < searchResults.hits.total) ? (pagination['offset'] + pagination['limit']) : searchResults.hits.total;
+        $("span.showing-text").html("Showing " + (pagination['offset'] + 1) + " to " + toShowing + " of " + searchResults.hits.total + " Results");
     } else {
         $("span.showing-text").hide();
         $("#resultsPane").append("<h5>It appears your search returned no results.</h5>");
     }
+
+}
+
+// When changing the search, reset to the first page.
+function resetPagination() {
+    pagination['page'] = 1;
+    pagination['offset'] = 0;
 }

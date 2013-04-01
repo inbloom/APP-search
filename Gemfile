@@ -33,6 +33,9 @@ gem 'jquery-rails'
 gem 'jquery-ui-rails'
 # Google Analytics
 gem 'google-analytics-rails'
+
+gem 'rest-client'
+
 # Dev only
 group :development, :test do
 # Use thin as webserver
