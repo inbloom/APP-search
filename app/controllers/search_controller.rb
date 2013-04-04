@@ -44,7 +44,7 @@ class SearchController < ApplicationController
           filter.keys.each do |f|
             orFilters << { 'query' => { 'match' => { key => f.to_s } } }
           end
-          filters << { 'or' => [ orFilters ] }
+          filters << { 'or' => orFilters }
         else
           # This should be simple, there is only one of this filter key
           filters << { 'query' => { 'match' => { key => filter.keys.first.to_s } } }
