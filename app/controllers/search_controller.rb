@@ -23,8 +23,6 @@ class SearchController < ApplicationController
   #  of the commented out PUTS below to see the output in webrick and make sure it's right.
   # Comments, suggestions and feedback is welcome; Jason Ellis <jason.ellis@yahoo.com>
   def full_search
-    # Search Engine - @TODO should put this in the config
-    url = 'http://esearch.agilix.com:9200/lr/lr/_search'
 
     # define the elasticsearch result "size" (limit)
     limit = params['limit']
@@ -82,7 +80,7 @@ class SearchController < ApplicationController
 #puts "PAYLOAD"; puts payload.to_json
 
     # Okay after all that mess, lets make the request
-    request = RestClient::Request.new( :method => :get, :url => url, :payload => payload.to_json )
+    request = RestClient::Request.new( :method => :get, :url => Rails.configuration.elastic_search_url, :payload => payload.to_json )
 
     # Since this can error lets catch it
     begin

@@ -50,4 +50,8 @@ LRMISearch::Application.configure do
 
   # Print deprecation notices to the stderr
   config.active_support.deprecation = :stderr
+
+  # Elastic search server configs
+  config.elastic_search_url = 'http://esearch.agilix.com:9200/lr/lr/_search'
+
 end
