@@ -353,53 +353,70 @@ function performSearch() {
 // Parse out the results
 function parseSearchResults() {
 
-    pagination['page'] = (pagination['offset'] / pagination['limit']) + 1 || 1;
-    pagination['pages'] = Math.ceil(searchResults.hits.total / pagination['limit']);
+  pagination['page'] = (pagination['offset'] / pagination['limit']) + 1 || 1;
+  pagination['pages'] = Math.ceil(searchResults.hits.total / pagination['limit']);
 
-    $("#resultsPane").empty();
+  $("#resultsPane").empty();
 
-    // Draw each of the search result hits to the page
-    if (searchResults.hits.hits != undefined && searchResults.hits.hits.length > 0 ) {
-        for(item in searchResults.hits.hits) {
+  // Draw each of the search result hits to the page
+  if (searchResults.hits.hits != undefined && searchResults.hits.hits.length > 0 ) {
+    for(item in searchResults.hits.hits) {
 
-            var props = searchResults.hits.hits[item]['_source'].properties;
-            var item_thumb = (props.thumbnailUrl != undefined) ? props.thumbnailUrl[0] : '';
-            var item_url = (props.url != undefined) ? props.url[0] : '';
-            var item_name  = (props.name != undefined) ? props.name[0] : '';
+      var props = searchResults.hits.hits[item]['_source'].properties;
+      var item_url = (props.url != undefined) ? props.url[0] : '';
+      var item_name = (props.name != undefined) ? props.name[0] : '';
+      var item_description = (props['description'] == undefined)?'':props['description'][0];
+      var item_dateCreated = (props['dateCreated'] == undefined)?'':props['dateCreated'][0];
 
-            $("#resultsPane").append($("<div class='result'><img class='thumbnail' src='"+item_thumb+"' width='190' height='60' /><p><em><a href='"+item_url+"' target='_blank'>"+item_name+"</a></em></p><cite>"+item_url+"</cite></div>"));
 
+      var thumbnail = (props['thumbnailUrl'] != undefined)?props['thumbnailUrl'][0]:'';
+      if (thumbnail == '') {
+        // Figure out which default image to use based on order
+        if ($("#teachersCheckbox").prop('checked')) {
+          thumbnail = '/assets/default-image-teacher.png';
+        } else if ($("#studentsCheckbox").prop('checked')) {
+          thumbnail = '/assets/default-image-students.png';
+        } else if ($("#mediaCheckbox").prop('checked')) {
+          thumbnail = '/assets/default-image-av.png';
+        } else if ($("#pagesCheckbox").prop('checked')) {
+          thumbnail = '/assets/default-image-reading.png';
+        } else {
+          thumbnail = '/assets/default-image-all.png';
         }
+      }
+
+      $("#resultsPane").append($("<div class='result'><img class='thumbnail' src='"+thumbnail+"' /><h4><em><a href='"+item_url+"' target='_blank'>"+item_name+"</a></em></h4><cite>"+item_url+"</cite><p>"+item_description+"</p></div>"));
+
     }
+  }
 
-    // Inject the pagination buttons
-
-    if (pagination['pages'] > 1) {
-        $("#resultsPane").append($('<div class="pagination pull-right"><ul class="paginationPageButtons"></ul></div>'));
-        $(".paginationPageButtons").append($('<li class="'+((pagination['page']==1)?"disabled":"")+'"><a rel="pagination" href="#'+1+'"> &lt;&lt; </a></li>'));
-        if ((pagination['page'] - pagination['number_of_buttons'] > 1)) {
-            $(".paginationPageButtons").append($('<li><a rel="pagination" href="#1">1 ...</a></li>'));
-        }
-        for (i = 1; i <= pagination['pages']; i++) {
-            if ((i + pagination['number_of_buttons']) > pagination['page'] && (i - pagination['number_of_buttons']) < pagination['page']) {
-                $(".paginationPageButtons").append($("<li class='"+((i==pagination['page'])?'active':'')+"'><a rel='pagination' href='#"+i+"'>"+i+"</a></li>"));
-            }
-        }
-        if ((pagination['page'] + pagination['number_of_buttons']) < pagination['pages']) {
-            $(".paginationPageButtons").append($('<li><a rel="pagination" href="#'+pagination['pages']+'">... '+pagination['pages']+'</a></li>'));
-        }
-        $(".paginationPageButtons").append($('<li class="'+((pagination['page']==pagination['pages'])?'disabled':'')+'"><a rel="pagination" href="#'+pagination['pages']+'"> &gt;&gt; </a></li>'));
+  // Inject the pagination buttons
+  if (pagination['pages'] > 1) {
+    $("#resultsPane").append($('<div class="pagination pull-right"><ul class="paginationPageButtons"></ul></div>'));
+    $(".paginationPageButtons").append($('<li class="'+((pagination['page']==1)?"disabled":"")+'"><a rel="pagination" href="#'+1+'"> &lt;&lt; </a></li>'));
+    if ((pagination['page'] - pagination['number_of_buttons'] > 1)) {
+      $(".paginationPageButtons").append($('<li><a rel="pagination" href="#1">1 ...</a></li>'));
     }
-
-    // Apply the showing text
-    if (searchResults.hits.total >= 1) {
-        $("span.showing-text").show();
-        var toShowing = ((pagination['offset'] + pagination['limit']) < searchResults.hits.total) ? (pagination['offset'] + pagination['limit']) : searchResults.hits.total;
-        $("span.showing-text").html("Showing " + (pagination['offset'] + 1) + " to " + toShowing + " of " + searchResults.hits.total + " Results");
-    } else {
-        $("span.showing-text").hide();
-        $("#resultsPane").append("<h5>It appears your search returned no results.</h5>");
+    for (i = 1; i <= pagination['pages']; i++) {
+      if ((i + pagination['number_of_buttons']) > pagination['page'] && (i - pagination['number_of_buttons']) < pagination['page']) {
+        $(".paginationPageButtons").append($("<li class='"+((i==pagination['page'])?'active':'')+"'><a rel='pagination' href='#"+i+"'>"+i+"</a></li>"));
+      }
     }
+    if ((pagination['page'] + pagination['number_of_buttons']) < pagination['pages']) {
+      $(".paginationPageButtons").append($('<li><a rel="pagination" href="#'+pagination['pages']+'">... '+pagination['pages']+'</a></li>'));
+    }
+    $(".paginationPageButtons").append($('<li class="'+((pagination['page']==pagination['pages'])?'disabled':'')+'"><a rel="pagination" href="#'+pagination['pages']+'"> &gt;&gt; </a></li>'));
+  }
+
+  // Apply the showing text
+  if (searchResults.hits.total >= 1) {
+      $("span.showing-text").show();
+      var toShowing = ((pagination['offset'] + pagination['limit']) < searchResults.hits.total) ? (pagination['offset'] + pagination['limit']) : searchResults.hits.total;
+      $("span.showing-text").html("Showing " + (pagination['offset'] + 1) + " to " + toShowing + " of " + searchResults.hits.total + " Results");
+  } else {
+      $("span.showing-text").hide();
+      $("#resultsPane").append("<h5>It appears your search returned no results.</h5>");
+  }
 
 }
 

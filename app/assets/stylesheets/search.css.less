@@ -8,6 +8,13 @@
   filter: e(%("progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=%d,endColorstr=%d)", @color1, @color3));
 }
 
+.font-opensans {
+  font-family: 'Open Sans', Arial;
+}
+
+body {
+  .font-opensans;
+}
 /** Custom Icons -- Fix **/
 [class^="icon-"], [class*=" icon-"],
 [class^="icon-"]::before, [class*=" icon-"]::before {
@@ -197,14 +204,20 @@ td.main-column {
     margin-bottom: 10px;
     clear: left;
     img.thumbnail {
-      width: 160px;
+      width: 90px;
       height: 90px;
       float: left;
-      margin-right: 20px;
+      margin-right: 10px;
     }
     p {
+      font-size: 12px;
       padding: 0;
       margin: 0;
+    }
+    h4 {
+      margin-top: 0;
+      margin-bottom: 5px;
+      font-size: 14px;
     }
     em {
       cursor: pointer;
