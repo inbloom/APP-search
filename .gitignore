@@ -18,3 +18,5 @@
 config/slc.yml
 
 /.idea
+
+/public/assets
