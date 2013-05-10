@@ -15,21 +15,31 @@
  */
 
 // Reads the ccss2asn-ela.csv and ccss2asn-math.csv from local server to populate Alignment Array
+var jsonStandards;
 function readAlignmentDataFromFiles() {
-    $.ajax({
-        type: "GET",
-        url: "ccss2asn-math.csv",
-        dataType: "text",
-        success: function(data) {
-            processDataForAlignmentArray(data);
-        }
-    });
-    $.ajax({
-        type: "GET",
-        url: "ccss2asn-ela.csv",
-        dataType: "text",
-        success: function(data) {
-            processDataForAlignmentArray(data);
-        }
-    });
+  $.ajax({
+      type: "GET",
+      url: "ccss-sorted.json",
+      dataType: "json",
+      success: function(data) {
+          jsonStandards = data;
+          $.ajax({
+              type: "GET",
+              url: "/ccss2asn-math.csv",
+              dataType: "text",
+              success: function(data) {
+                  processDataForAlignmentArray(data, jsonStandards);
+              }
+          });
+          $.ajax({
+              type: "GET",
+              url: "ccss2asn-ela.csv",
+              dataType: "text",
+              success: function(data) {
+                  processDataForAlignmentArray(data, jsonStandards);
+              }
+          });
+      }
+  });
+
 }
