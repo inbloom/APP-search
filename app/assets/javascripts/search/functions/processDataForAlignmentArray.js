@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 
-function processDataForAlignmentArray(allText)	{
+function processDataForAlignmentArray(allText, jsonStandards)	{
     var lines = allText.split(/\n|\r/);
     for (var i = 1; i < lines.length -1 ; i++) {
-        var split = lines[i].split(',');
-        dotNotationDisplayArray.push(split[2]);
+       var split = lines[i].split(',');
+       var tmp_title = split[2].replace(/(HS[\w])-/, "$1.");
+       var notation = '["'+tmp_title.replace(/\./g,'"]["')+'"]';
+       try {
+         valed = eval("jsonStandards" + notation);  
+         dotNotationDisplayArray.push(tmp_title);
+       }   
+       catch (e) {
+         console.log(tmp_title);
+       }   
     }
 }
